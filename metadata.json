@@ -1,0 +1,8 @@
+{
+  "name": "HSW365stream.com",
+  "description": "The official web destination for HSW365stream. The ultimate creator-first streaming platform combining cinematic power with viral energy. Powered by Gemini AI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
