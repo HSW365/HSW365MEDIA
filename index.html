@@ -1,56 +1,363 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-hoods@Optiplex MINGW64 /
-$ npm install
-npm run build
-git add .
-git commit -m "Upgrade HSW365MEDIA homepage"
-git push
-npm error code EPERM
-npm error syscall open
-npm error path C:\Program Files\Git\package-lock.json
-npm error errno -4048
-npm error Error: EPERM: operation not permitted, open 'C:\Program Files\Git\pack
-age-lock.json'
-npm error     at async open (node:internal/fs/promises:639:25)
-npm error     at async writeFile (node:internal/fs/promises:1213:14)
-npm error     at async Promise.all (index 0)
-npm error     at async [saveIdealTree] (C:\Program Files\nodejs\node_modules\npm
-\node_modules\@npmcli\arborist\lib\arborist\reify.js:1526:7)
-npm error     at async Arborist.reify (C:\Program Files\nodejs\node_modules\npm\
-node_modules\@npmcli\arborist\lib\arborist\reify.js:148:5)
-npm error     at async Install.exec (C:\Program Files\nodejs\node_modules\npm\li
-b\commands\install.js:150:5)
-npm error     at async Npm.exec (C:\Program Files\nodejs\node_modules\npm\lib\np
-m.js:207:9)
-npm error     at async module.exports (C:\Program Files\nodejs\node_modules\npm\
-lib\cli\entry.js:74:5) {
-npm error   errno: -4048,
-npm error   code: 'EPERM',
-npm error   syscall: 'open',
-npm error   path: 'C:\\Program Files\\Git\\package-lock.json'
-npm error }
-npm error
-npm error The operation was rejected by your operating system.
-npm error It's possible that the file was already in use (by a text editor or an
-tivirus),
-npm error or that you lack permissions to access it.
-npm error
-npm error If you believe this might be a permissions issue, please double-check
-the
-npm error permissions of the file and its containing directories, or try running
-npm error the command again as root/Administrator.
-npm error A complete log of this run can be found in: C:\Users\hoods\AppData\Loc
-al\npm-cache\_logs\2026-06-07T02_48_59_012Z-debug-0.log
-npm error code ENOENT
-npm error syscall open
-npm error path C:\Program Files\Git\package.json
-npm error errno -4058
-npm error enoent Could not read package.json: Error: ENOENT: no such file or dir
-ectory, open 'C:\Program Files\Git\package.json'
-npm error enoent This is related to npm not being able to find a file.
-npm error enoent
-npm error A complete log of this run can be found in: C:\Users\hoods\AppData\Loc
-al\npm-cache\_logs\2026-06-07T02_49_01_464Z-debug-0.log
-fatal: not a git repository (or any of the parent directories): .git
-fatal: not a git repository (or any of the parent directories): .git
-fatal: not a git repository (or any of the parent directories): .git
+  <title>HSW365 Media | Hoodstar365</title>
+  <meta name="description" content="HSW365 Media by Hoodstar365 - live radio, music videos, books, podcasts, merch, artist services, apps, memberships, iRUN AI content engine, and creator opportunities." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-black text-white font-sans">
+
+  <header class="sticky top-0 z-50 bg-black/95 border-b border-red-600">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-black">
+          HSW<span class="text-red-600">365</span> MEDIA
+        </h1>
+        <p class="text-xs text-gray-400">Music • Books • Radio • Podcasts • Apps • Merch • AI</p>
+      </div>
+
+      <nav class="flex flex-wrap justify-center gap-4 text-xs font-bold uppercase">
+        <a href="index.html" class="hover:text-red-500">Home</a>
+        <a href="hoodstar365tvradio/" class="hover:text-red-500">Radio</a>
+        <a href="#videos" class="hover:text-red-500">Videos</a>
+        <a href="#services" class="hover:text-red-500">Services</a>
+        <a href="#membership" class="hover:text-red-500">Membership</a>
+        <a href="#irun" class="hover:text-orange-500">iRUN AI</a>
+        <a href="#booking" class="hover:text-red-500">Booking</a>
+      </nav>
+
+      <a href="mailto:Book@Hoodstar365.com" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold text-sm">
+        BOOK NOW
+      </a>
+    </div>
+  </header>
+
+  <section class="min-h-[85vh] flex items-center px-5 py-16 bg-gradient-to-b from-zinc-950 to-black">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <p class="text-red-500 font-black tracking-widest text-sm uppercase">Built By Hoodstar365</p>
+
+        <h2 class="text-5xl md:text-7xl font-black leading-none mt-4">
+          THE HSW365<br>
+          <span class="text-red-600">MEDIA EMPIRE</span>
+        </h2>
+
+        <p class="text-gray-300 mt-6 text-lg">
+          Music, books, live radio, podcasts, apps, merch, artist services, survivor stories,
+          memberships, AI content tools, and booking opportunities all under one roof.
+        </p>
+
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+          <a href="#radio" class="bg-red-600 px-6 py-4 rounded-xl font-black text-center">LISTEN LIVE</a>
+          <a href="https://cash.app/$hsw365" class="bg-green-600 px-6 py-4 rounded-xl font-black text-center">CASH APP $hsw365</a>
+          <a href="#irun" class="bg-orange-600 px-6 py-4 rounded-xl font-black text-center">iRUN AI ENGINE</a>
+        </div>
+      </div>
+
+      <div class="bg-zinc-950 border border-red-600 rounded-3xl p-6">
+        <div class="aspect-video rounded-2xl bg-gradient-to-br from-red-700 to-black flex items-center justify-center text-center p-6">
+          <div>
+            <p class="text-6xl mb-4">▶</p>
+            <h3 class="text-3xl font-black">HOODSTAR365 TV RADIO</h3>
+            <p class="text-gray-400 mt-2">Home of indie artists and future stars</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="radio" class="max-w-7xl mx-auto px-5 py-14">
+    <h2 class="text-4xl font-black mb-4">LIVE RADIO PLAYER</h2>
+
+    <div class="bg-zinc-950 border border-red-600 rounded-3xl p-6">
+      <h3 class="text-2xl font-black">Hoodstar365 TV Radio Live</h3>
+      <p class="text-gray-400 mb-5">Broadcasting indie music, interviews, podcasts, and artist promotion 24/7.</p>
+
+      <audio controls class="w-full">
+        <source src="https://stream.zeno.fm/f9mz6798g0hvv" type="audio/mpeg">
+        Your browser does not support the audio player.
+      </audio>
+
+      <a href="hoodstar365tvradio/" class="inline-block mt-6 bg-red-600 px-6 py-4 rounded-xl font-black">
+        ENTER FULL RADIO SITE
+      </a>
+    </div>
+  </section>
+
+  <section id="videos" class="max-w-7xl mx-auto px-5 py-14">
+    <h2 class="text-4xl font-black mb-4">MUSIC VIDEO PLAYER</h2>
+    <p class="text-gray-400 mb-6">Replace YOUR_VIDEO_ID_HERE with your real YouTube video ID.</p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
+        <div class="aspect-video">
+          <iframe class="w-full h-full" src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="HSW365 Music Video" allowfullscreen></iframe>
+        </div>
+        <div class="p-5">
+          <p class="text-red-500 font-black text-sm">OFFICIAL VIDEO</p>
+          <h3 class="text-xl font-black">HOODSTAR365 Featured Music Video</h3>
+        </div>
+      </div>
+
+      <div class="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
+        <div class="aspect-video">
+          <iframe class="w-full h-full" src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="Indie Artist Spotlight" allowfullscreen></iframe>
+        </div>
+        <div class="p-5">
+          <p class="text-yellow-500 font-black text-sm">ARTIST FEATURE</p>
+          <h3 class="text-xl font-black">Indie Artist Spotlight</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-5 py-14 grid md:grid-cols-3 gap-6">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+      <h3 class="text-2xl font-black text-red-500">Books & Ebooks</h3>
+      <p class="text-gray-400 mt-2">Hoodlum Soldier, Soldier 2 Convict, Raising Sons, From Prison to Purpose, business guides, and music monetization ebooks.</p>
+    </div>
+
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+      <h3 class="text-2xl font-black text-red-500">Music Catalog</h3>
+      <p class="text-gray-400 mt-2">Official HOODSTAR365 music, EPs, singles, streaming links, and exclusive drops.</p>
+    </div>
+
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+      <h3 class="text-2xl font-black text-red-500">Survivor Collection</h3>
+      <p class="text-gray-400 mt-2">1 of 1 hand-painted merchandise created by HOODSTAR365. Premium collector pieces.</p>
+    </div>
+
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+      <h3 class="text-2xl font-black text-red-500">Respect Da Game Podcast</h3>
+      <p class="text-gray-400 mt-2">Real talk, artist interviews, social issues, business lessons, and media conversations.</p>
+    </div>
+
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+      <h3 class="text-2xl font-black text-red-500">SpeekZone & Apps</h3>
+      <p class="text-gray-400 mt-2">SpeekZone, Doodee, AI tools, creator platforms, and future HSW365 tech products.</p>
+    </div>
+
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
+      <h3 class="text-2xl font-black text-red-500">Support Recovery</h3>
+      <p class="text-gray-400 mt-2">Support cancer treatment recovery, rebuilding, and the independent creator movement.</p>
+    </div>
+  </section>
+
+  <section id="irun" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="bg-gradient-to-br from-orange-700 to-black border border-orange-500 rounded-3xl p-8">
+      <h2 class="text-4xl font-black">iRUN AI CONTENT ENGINE</h2>
+
+      <p class="text-gray-300 mt-4 max-w-4xl">
+        iRUN is the future AI-powered content and promotion engine for HSW365 Media.
+        It is designed to help artists, creators, authors, brands, and entrepreneurs generate
+        social posts, promo emails, video captions, ad copy, booking pitches, and placement campaigns.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-5 mt-8">
+        <div class="bg-black/40 p-6 rounded-2xl">
+          <h3 class="text-xl font-black text-orange-400">AI Content Creation</h3>
+          <p class="text-gray-400 mt-2">Generate captions, hooks, blogs, emails, ads, scripts, hashtags, and social media content.</p>
+        </div>
+
+        <div class="bg-black/40 p-6 rounded-2xl">
+          <h3 class="text-xl font-black text-orange-400">Promotion Engine</h3>
+          <p class="text-gray-400 mt-2">Create campaigns for radio placements, mixtape slots, podcast interviews, and business ads.</p>
+        </div>
+
+        <div class="bg-black/40 p-6 rounded-2xl">
+          <h3 class="text-xl font-black text-orange-400">Future Automation</h3>
+          <p class="text-gray-400 mt-2">Email campaigns, lead management, scheduling, SMS updates, and creator tools.</p>
+        </div>
+      </div>
+
+      <div class="mt-8 grid md:grid-cols-3 gap-4">
+        <a href="mailto:Book@Hoodstar365.com?subject=iRUN AI Content Engine Inquiry" class="bg-orange-600 px-6 py-4 rounded-xl font-black text-center">
+          ACTIVATE iRUN
+        </a>
+
+        <a href="https://cash.app/$hsw365" class="bg-green-600 px-6 py-4 rounded-xl font-black text-center">
+          PAY WITH CASH APP
+        </a>
+
+        <a href="#membership" class="bg-white text-black px-6 py-4 rounded-xl font-black text-center">
+          JOIN MEMBERSHIP
+        </a>
+      </div>
+
+      <p class="text-gray-500 text-sm mt-6">
+        Automation note: email blasting, social posting, SMS, and AI assistant tools require backend services like Brevo, MailerLite, SendGrid, Twilio, Buffer, Zapier, Supabase, and OpenAI/Claude API. Version 1 presents and sells the system. Version 2 connects full automation.
+      </p>
+    </div>
+  </section>
+
+  <section id="services" class="max-w-7xl mx-auto px-5 py-14">
+    <h2 class="text-4xl font-black mb-6">ARTIST SERVICES</h2>
+
+    <div class="grid md:grid-cols-4 gap-5">
+      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
+        <p class="text-yellow-500 text-3xl font-black">$49</p>
+        <h3 class="font-black mt-2">Radio Airplay Slot</h3>
+      </div>
+
+      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
+        <p class="text-yellow-500 text-3xl font-black">$79</p>
+        <h3 class="font-black mt-2">Mixtape Slot Placement</h3>
+      </div>
+
+      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
+        <p class="text-yellow-500 text-3xl font-black">$99</p>
+        <h3 class="font-black mt-2">Podcast Interview</h3>
+      </div>
+
+      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
+        <p class="text-yellow-500 text-3xl font-black">$149</p>
+        <h3 class="font-black mt-2">Front Page Video Feature</h3>
+      </div>
+    </div>
+
+    <a href="mailto:Book@Hoodstar365.com?subject=Artist Placement Submission" class="inline-block mt-8 bg-yellow-500 text-black px-6 py-4 rounded-xl font-black">
+      SUBMIT YOUR MUSIC NOW
+    </a>
+  </section>
+
+  <section id="membership" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="bg-gradient-to-br from-purple-700 to-black border border-purple-500 rounded-3xl p-8">
+      <h2 class="text-4xl font-black">HSW365 MEMBERSHIP</h2>
+      <p class="text-gray-200 mt-4 max-w-4xl">
+        Join the HSW365 membership to access discounts, priority placement reviews,
+        exclusive updates, creator opportunities, AI campaign tools, and future media benefits.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-5 mt-8">
+        <div class="bg-black/50 p-6 rounded-2xl">
+          <h3 class="text-xl font-black">Starter</h3>
+          <p class="text-3xl font-black text-purple-400 mt-2">$19.99/mo</p>
+          <p class="text-gray-400 mt-2">Basic member access and updates.</p>
+        </div>
+
+        <div class="bg-black/50 p-6 rounded-2xl border border-yellow-500">
+          <h3 class="text-xl font-black">VIP Artist</h3>
+          <p class="text-3xl font-black text-yellow-400 mt-2">$49.99/mo</p>
+          <p class="text-gray-400 mt-2">Discounts, priority reviews, and promo opportunities.</p>
+        </div>
+
+        <div class="bg-black/50 p-6 rounded-2xl">
+          <h3 class="text-xl font-black">Business Promo</h3>
+          <p class="text-3xl font-black text-purple-400 mt-2">$99.99/mo</p>
+          <p class="text-gray-400 mt-2">For brands, ads, interviews, and media exposure.</p>
+        </div>
+      </div>
+
+      <a href="#" class="inline-block mt-8 bg-purple-600 px-6 py-4 rounded-xl font-black">
+        ADD STRIPE SUBSCRIPTION LINK
+      </a>
+    </div>
+  </section>
+
+  <section id="ai-roadmap" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="bg-zinc-950 border border-red-600 rounded-3xl p-8">
+      <h2 class="text-4xl font-black">HSW365 PHASE 2 ROADMAP</h2>
+      <p class="text-gray-300 mt-4 max-w-4xl">
+        Future upgrade: AI Hoodstar365 assistant, email automation, artist onboarding,
+        customer support, booking assistance, SMS notifications, business ads, promo automation,
+        subscriber dashboard, and creator campaign tracking.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-5 mt-8">
+        <div class="bg-black p-6 rounded-2xl">
+          <h3 class="text-xl font-black text-red-400">AI Hoodstar365 Assistant</h3>
+          <p class="text-gray-400 mt-2">Virtual assistant for emails, submissions, FAQs, and booking leads.</p>
+        </div>
+
+        <div class="bg-black p-6 rounded-2xl">
+          <h3 class="text-xl font-black text-red-400">Automation System</h3>
+          <p class="text-gray-400 mt-2">Automated artist placements, promo packages, text alerts, and follow-ups.</p>
+        </div>
+
+        <div class="bg-black p-6 rounded-2xl">
+          <h3 class="text-xl font-black text-red-400">Digital Ecosystem</h3>
+          <p class="text-gray-400 mt-2">Future research into creator rewards, memberships, and digital assets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hsw365coin" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-8">
+      <h2 class="text-4xl font-black text-yellow-500">HSW365 DIGITAL ASSET ROADMAP</h2>
+      <p class="text-gray-300 mt-4 max-w-4xl">
+        HSW365 Media is exploring a future digital asset ecosystem connected to the brand,
+        creator community, media network, and membership platform.
+      </p>
+      <p class="text-red-400 mt-4 text-sm font-bold">
+        Disclaimer: This is not financial advice. Digital assets carry risk. No profits,
+        returns, or investment outcomes are guaranteed.
+      </p>
+    </div>
+  </section>
+
+  <section id="security" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="bg-zinc-950 border border-blue-500 rounded-3xl p-8">
+      <h2 class="text-4xl font-black text-blue-400">SECURITY & PROTECTION</h2>
+      <p class="text-gray-300 mt-4 max-w-4xl">
+        HSW365 Media protects its platform, creators, and subscribers with bot protection,
+        spam filtering, suspicious traffic blocking, secure payment links, and abuse prevention.
+        Cyberattack attempts, fraud, scraping, spam, and harmful activity may be blocked.
+      </p>
+    </div>
+  </section>
+
+  <section id="booking" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="bg-gradient-to-br from-red-700 to-black border border-red-600 rounded-3xl p-8">
+      <h2 class="text-4xl font-black">BOOK HOODSTAR365</h2>
+      <p class="text-gray-200 mt-4 max-w-3xl">
+        Bring HOODSTAR365 to schools, colleges, podcasts, community events, prisons,
+        veteran events, business platforms, and creator conferences.
+      </p>
+
+      <a href="mailto:Book@Hoodstar365.com" class="inline-block mt-6 bg-white text-black px-6 py-4 rounded-xl font-black">
+        Book@Hoodstar365.com
+      </a>
+    </div>
+  </section>
+
+  <section id="support" class="max-w-7xl mx-auto px-5 py-14">
+    <h2 class="text-4xl font-black mb-6">SUPPORT THE MOVEMENT</h2>
+
+    <div class="grid md:grid-cols-4 gap-5">
+      <a href="https://cash.app/$hsw365" class="bg-green-600 rounded-3xl p-6 font-black text-center">Cash App $hsw365</a>
+      <a href="https://hsw365media.com" class="bg-white text-black rounded-3xl p-6 font-black text-center">Shop Products</a>
+      <a href="#" class="bg-purple-600 rounded-3xl p-6 font-black text-center">Stripe Checkout</a>
+      <a href="#" class="bg-blue-600 rounded-3xl p-6 font-black text-center">PayPal</a>
+    </div>
+  </section>
+
+  <div class="fixed bottom-0 left-0 right-0 bg-zinc-950 border-t border-red-600 p-3 z-50">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div>
+        <p class="font-black text-red-500 text-sm">LIVE NOW: HOODSTAR365 TV RADIO</p>
+        <p class="text-xs text-gray-400">Indie music, interviews, podcasts, and future stars</p>
+      </div>
+
+      <audio controls class="w-full md:w-[420px]">
+        <source src="https://stream.zeno.fm/f9mz6798g0hvv" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>
+
+  <footer class="pb-32 pt-10 text-center text-gray-500 border-t border-zinc-800">
+    <p class="font-black text-white">HSW<span class="text-red-600">365</span> MEDIA</p>
+    <p>© 2026 HSW365 Media. Built by HOODSTAR365.</p>
+    <p>Booking: Book@Hoodstar365.com | Cash App: $hsw365</p>
+  </footer>
+
+</body>
+</html>
+```
+
