@@ -1,194 +1,388 @@
-import React, { useState } from 'react';
-import Layout from './components/Layout.tsx';
-import NetflixSection from './components/NetflixSection.tsx';
-import ShortsFeed from './components/ShortsFeed.tsx';
-import CreatorStudio from './components/CreatorStudio.tsx';
-import DirectMessages from './components/DirectMessages.tsx';
-import LiveInteractions from './components/LiveInteractions.tsx';
-import SubscriptionView from './components/SubscriptionView.tsx';
-import BusinessCenter from './components/BusinessCenter.tsx';
-import { VideoContent, ContentType, AppView } from './types.ts';
-import { Play, Star, Plus, Info, Globe, Shield, Zap, Radio, TrendingUp } from 'lucide-react';
-
-// Mock Data
-const MOCK_VIDEOS: VideoContent[] = [
+import React, { useState } from "react";
+import {
+  Radio,
+  Play,
+  BookOpen,
+  Music,
+  Shirt,
+  Mic,
+  Smartphone,
+  Star,
+  Heart,
+  Mail,
+  DollarSign,
+  Menu,
+  X,
+  Video,
+  Headphones,
+  Crown,
+  Send,
+} from "lucide-react";
+const CASHAPP = "https://cash.app/$hsw365";
+const PAYPAL = "#";
+const STRIPE = "#";
+const BOOKING_EMAIL = "mailto:Book@Hoodstar365.com?subject=Booking Hoodstar365";
+const ARTIST_EMAIL = "mailto:Book@Hoodstar365.com?subject=Artist Placement Submission";
+const GUMROAD = "https://hsw365media.com";
+const RADIO_STREAM = "https://stream.zeno.fm/f9mz6798g0hvv";
+const videos = [
   {
-    id: '1',
-    title: 'Neon Odyssey: The Last Director',
-    description: 'A visual masterpiece following a director lost in a cyberpunk Tokyo. Stunning 8K visuals and award-winning sound design.',
-    thumbnail: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1280&q=80',
-    videoUrl: '#',
-    duration: '2h 14m',
-    views: 1200000,
-    likes: 450000,
-    type: ContentType.MOVIE,
-    creator: { id: 'c1', name: 'Kaelen Vance', handle: 'kvance', avatar: 'https://i.pravatar.cc/150?u=c1', followers: 2000000, verified: true, role: 'Director' },
-    tags: ['Cyberpunk', 'Cinematic', 'Sci-Fi'],
-    releasedAt: '2024-03-15'
+    title: "HOODSTAR365 Featured Music Video",
+    youtubeId: "YOUR_VIDEO_ID_HERE",
+    label: "Official Video",
   },
   {
-    id: '2',
-    title: 'Echoes of Fashion: Spring 2025',
-    description: 'Exclusive look at the avant-garde collection of the decade. Redefining silhouettes and sustainability.',
-    thumbnail: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1280&q=80',
-    videoUrl: '#',
-    duration: '45m',
-    views: 890000,
-    likes: 310000,
-    type: ContentType.SERIES,
-    creator: { id: 'c2', name: 'Zoe Aris', handle: 'zoearis', avatar: 'https://i.pravatar.cc/150?u=c2', followers: 5400000, verified: true, role: 'Designer' },
-    tags: ['Fashion', 'Art', 'Trends'],
-    releasedAt: '2024-03-20'
+    title: "Indie Artist Spotlight",
+    youtubeId: "YOUR_VIDEO_ID_HERE",
+    label: "Artist Feature",
   },
-  {
-    id: 's1',
-    title: 'POV: You missed the call',
-    description: 'Every comedian knows this feeling when the agent calls and you are in the shower.',
-    thumbnail: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1280&q=80',
-    videoUrl: '#',
-    duration: '0:15',
-    views: 5600000,
-    likes: 1200000,
-    type: ContentType.SHORT,
-    creator: { id: 'c3', name: 'Mark G.', handle: 'markfunny', avatar: 'https://i.pravatar.cc/150?u=c3', followers: 10000000, verified: true, role: 'Comedian' },
-    tags: ['POV', 'Comedy', 'Relatable'],
-    releasedAt: '2024-03-22'
-  }
 ];
-
-const HomeView = ({ onJoinLive, onUpgrade }: { onJoinLive: () => void, onUpgrade: () => void }) => (
-  <div className="pb-20 animate-in fade-in duration-700">
-    <div className="relative h-[85vh] w-full flex items-end px-6 md:px-12 pb-24 overflow-hidden">
-      <img 
-        src="https://images.unsplash.com/photo-1514306191717-452ec28c7814?w=1920&q=80" 
-        className="absolute inset-0 w-full h-full object-cover"
-        alt="hero"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/20 to-transparent"></div>
-      <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/60 via-transparent to-transparent"></div>
-      
-      <div className="relative z-10 max-w-4xl">
-        <div className="flex items-center gap-4 mb-6">
-          <span className="bg-red-600 text-[10px] font-black tracking-widest px-3 py-1 rounded text-white uppercase italic">HSW365stream Original</span>
-          <span className="text-sm font-bold text-white/80 flex items-center gap-2 uppercase tracking-[0.2em] bg-black/40 backdrop-blur-md px-3 py-1 rounded-lg">
-            <Globe size={14} className="text-indigo-400" /> Worldwide
-          </span>
-        </div>
-        <h1 className="text-6xl md:text-9xl font-black mb-6 leading-[0.8] tracking-tighter drop-shadow-2xl">
-          VELOCITY <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">X SERIES</span>
-        </h1>
-        <p className="text-xl text-gray-200 mb-10 max-w-2xl font-medium leading-relaxed drop-shadow-lg">
-          Witness the world's most influential creators push the limits of fashion, film, and digital art in an interactive survival competition.
-        </p>
-        <div className="flex flex-wrap gap-6">
-          <button 
-            onClick={onJoinLive}
-            className="group flex items-center gap-3 px-10 py-5 bg-white text-black font-black rounded-2xl hover:bg-indigo-50 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.15)] hover:-translate-y-1 active:scale-95"
-          >
-            <Radio size={24} className="text-red-600 animate-pulse" /> WATCH PREMIERE
-          </button>
-          <button 
-            onClick={onUpgrade}
-            className="flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-xl text-white font-black rounded-2xl border border-white/20 hover:bg-white/20 transition-all hover:-translate-y-1 active:scale-95"
-          >
-            <TrendingUp size={24} className="text-indigo-400" /> UPGRADE TO PRO
-          </button>
-        </div>
-      </div>
-
-      {/* Floating Info */}
-      <div className="absolute right-12 bottom-24 hidden lg:block text-right animate-in slide-in-from-right duration-1000">
-         <div className="flex items-center gap-4 justify-end mb-2">
-            <span className="text-xs font-black tracking-widest text-indigo-400 uppercase">Live Interaction</span>
-            <div className="flex -space-x-3">
-              {[1,2,3,4].map(i => (
-                <img key={i} src={`https://i.pravatar.cc/100?u=${i}`} className="w-8 h-8 rounded-full border-2 border-indigo-500" alt="viewer" />
-              ))}
-            </div>
-         </div>
-         <p className="text-4xl font-black tracking-tighter">24.8M <span className="text-indigo-500">LIVE</span></p>
-      </div>
-    </div>
-
-    {/* Content Grid */}
-    <div className="-mt-20 relative z-20 space-y-4">
-      <NetflixSection title="HSW365stream Premiere Films" items={MOCK_VIDEOS.filter(v => v.type === ContentType.MOVIE)} />
-      
-      <div className="px-6 mb-12">
-        <div className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border border-white/10 rounded-[3rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group hover:border-indigo-500/50 transition-all">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] pointer-events-none"></div>
-          <div className="flex items-center gap-8 z-10">
-             <div className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center text-black font-black text-3xl shadow-2xl">CF</div>
-             <div>
-               <div className="flex items-center gap-3 mb-2">
-                 <span className="text-[10px] bg-indigo-500 text-white px-2 py-1 rounded font-black tracking-widest uppercase">Sponsored</span>
-                 <h3 className="text-2xl font-black italic tracking-tighter">CYBERFIT COLLECTIVE</h3>
-               </div>
-               <p className="text-gray-400 max-w-lg font-medium">Digital fashion for the ultra-creator. Unlock the exclusive Summer '25 skin pack today.</p>
-             </div>
-          </div>
-          <button className="z-10 bg-white text-black px-10 py-4 rounded-2xl font-black hover:scale-105 transition-all shadow-xl active:scale-95">VIEW SHOP</button>
-        </div>
-      </div>
-
-      <NetflixSection title="Viral Flashes" items={MOCK_VIDEOS.filter(v => v.type === ContentType.SHORT)} />
-    </div>
-  </div>
-);
-
-const LiveView = () => (
-  <div className="flex h-full animate-in fade-in zoom-in-95 duration-700">
-    <div className="flex-1 relative bg-black overflow-hidden group">
-      <img 
-        src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1920&q=80" 
-        className="w-full h-full object-cover opacity-80"
-        alt="live"
-      />
-      <div className="absolute top-8 left-8 flex items-center gap-4">
-        <div className="bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-2xl">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          ULTRA HD LIVE
-        </div>
-        <div className="bg-black/60 backdrop-blur-xl text-white text-xs font-bold px-4 py-1.5 rounded-lg border border-white/10">
-          14.2M Watching Now
-        </div>
-      </div>
-      <div className="absolute bottom-10 left-10 max-w-lg">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-3 h-3 bg-indigo-500 rounded-full animate-ping"></div>
-          <span className="text-indigo-400 font-black tracking-[0.3em] text-[10px]">CURRENTLY ON AIR</span>
-        </div>
-        <h2 className="text-4xl font-black mb-3 tracking-tighter">Directing the Future</h2>
-        <p className="text-lg text-gray-300 font-medium">Kaelen Vance reveals the unseen footage of Tokyo 2088.</p>
-      </div>
-    </div>
-    <div className="hidden lg:block">
-      <LiveInteractions creatorName="Kaelen Vance" />
-    </div>
-  </div>
-);
-
-const App: React.FC = () => {
-  const [activeView, setActiveView] = useState<AppView>('home');
-
-  const renderView = () => {
-    switch(activeView) {
-      case 'home': return <HomeView onJoinLive={() => setActiveView('live')} onUpgrade={() => setActiveView('plans')} />;
-      case 'live': return <LiveView />;
-      case 'shorts': return <ShortsFeed shorts={MOCK_VIDEOS.filter(v => v.type === ContentType.SHORT)} />;
-      case 'studio': return <CreatorStudio />;
-      case 'messages': return <DirectMessages />;
-      case 'plans': return <SubscriptionView />;
-      case 'business': return <BusinessCenter />;
-      default: return <HomeView onJoinLive={() => setActiveView('live')} onUpgrade={() => setActiveView('plans')} />;
-    }
-  };
-
+const services = [
+  { name: "Radio Airplay Slot", price: "$49" },
+  { name: "Mixtape Slot Placement", price: "$79" },
+  { name: "Podcast Interview", price: "$99" },
+  { name: "Front Page Video Feature", price: "$149" },
+];
+function SectionTitle({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+}) {
   return (
-    <Layout activeView={activeView} setView={setActiveView}>
-      {renderView()}
-    </Layout>
+    <div className="mb-8">
+      <div className="flex items-center gap-3">
+        <div className="text-red-500">{icon}</div>
+        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight">
+          {title}
+        </h2>
+      </div>
+      {subtitle && <p className="text-zinc-400 mt-2 max-w-3xl">{subtitle}</p>}
+    </div>
   );
-};
-
-export default App;
+}
+function Card({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 hover:border-red-600 transition">
+      <div className="text-red-500 mb-4">{icon}</div>
+      <h3 className="text-xl font-black mb-2">{title}</h3>
+      <p className="text-zinc-400 text-sm leading-relaxed">{text}</p>
+    </div>
+  );
+}
+export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const nav = [
+    "Radio",
+    "Videos",
+    "Books",
+    "Music",
+    "Merch",
+    "Apps",
+    "Services",
+    "Booking",
+    "Support",
+  ];
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur border-b border-red-600/40">
+        <div className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+              HSW<span className="text-red-600">365</span> MEDIA
+            </h1>
+            <p className="text-xs text-zinc-400">
+              Music • Books • Radio • Podcasts • Apps • Merch
+            </p>
+          </div>
+          <nav className="hidden lg:flex gap-5 text-xs font-black uppercase">
+            {nav.map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className="hover:text-red-500 transition"
+              >
+                {item}
+              </a>
+            ))}
+          </nav>
+          <button
+            className="lg:hidden"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Open menu"
+          >
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
+        {menuOpen && (
+          <div className="lg:hidden px-5 pb-5 grid gap-3 bg-black border-t border-zinc-800">
+            {nav.map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                onClick={() => setMenuOpen(false)}
+                className="font-bold uppercase text-sm"
+              >
+                {item}
+              </a>
+            ))}
+          </div>
+        )}
+      </header>
+      <main className="pt-24 pb-32">
+        <section className="min-h-[85vh] flex items-center bg-[radial-gradient(circle_at_top_right,rgba(220,38,38,.35),transparent_35%),linear-gradient(to_bottom,#050505,#000)]">
+          <div className="max-w-7xl mx-auto px-5 grid lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <p className="text-red-500 font-black uppercase tracking-[0.3em] text-xs mb-4">
+                Built By HOODSTAR365
+              </p>
+              <h2 className="text-5xl md:text-7xl font-black leading-none">
+                THE HSW365
+                <span className="block text-red-600">MEDIA EMPIRE</span>
+              </h2>
+              <p className="text-zinc-300 mt-6 text-lg max-w-xl">
+                Music, books, live radio, podcasts, apps, merch, artist
+                services, survivor stories, and booking opportunities all under
+                one roof.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <a
+                  href="#radio"
+                  className="bg-red-600 hover:bg-red-700 px-6 py-4 rounded-xl font-black flex items-center justify-center gap-2"
+                >
+                  <Radio size={20} /> Listen Live
+                </a>
+                <a
+                  href={CASHAPP}
+                  className="bg-green-600 hover:bg-green-700 px-6 py-4 rounded-xl font-black flex items-center justify-center gap-2"
+                >
+                  <DollarSign size={20} /> Cash App $hsw365
+                </a>
+                <a
+                  href={BOOKING_EMAIL}
+                  className="bg-white text-black hover:bg-zinc-200 px-6 py-4 rounded-xl font-black flex items-center justify-center gap-2"
+                >
+                  <Mail size={20} /> Book Now
+                </a>
+              </div>
+            </div>
+            <div className="bg-zinc-950 border border-red-600/40 rounded-3xl p-6 shadow-2xl">
+              <div className="aspect-video rounded-2xl bg-gradient-to-br from-red-700 to-zinc-950 flex items-center justify-center border border-zinc-800">
+                <div className="text-center px-5">
+                  <Play className="mx-auto mb-4 text-red-500" size={70} />
+                  <h3 className="text-3xl font-black">
+                    HOODSTAR365 TV RADIO
+                  </h3>
+                  <p className="text-zinc-400 mt-2">
+                    Home of indie artists and future stars
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="radio" className="max-w-7xl mx-auto px-5 py-16">
+          <SectionTitle
+            icon={<Radio />}
+            title="Live Radio Player"
+            subtitle="Stream Hoodstar365 TV Radio live from the site."
+          />
+          <div className="bg-zinc-950 border border-red-600 rounded-3xl p-6">
+            <h3 className="text-2xl font-black mb-2">
+              Hoodstar365 TV Radio Live
+            </h3>
+            <p className="text-zinc-400 mb-5">
+              Broadcasting indie music, interviews, podcasts, and artist
+              promotion 24/7.
+            </p>
+            <audio controls className="w-full">
+              <source src={RADIO_STREAM} type="audio/mpeg" />
+              Your browser does not support the radio player.
+            </audio>
+          </div>
+        </section>
+        <section id="videos" className="max-w-7xl mx-auto px-5 py-16">
+          <SectionTitle
+            icon={<Video />}
+            title="Music Video Player"
+            subtitle="Feature HOODSTAR365 videos and paid indie artist video placements."
+          />
+          <div className="grid md:grid-cols-2 gap-6">
+            {videos.map((video, index) => (
+              <div
+                key={index}
+                className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden"
+              >
+                <div className="aspect-video bg-black">
+                  <iframe
+                    className="w-full h-full"
+                    src={`https://www.youtube.com/embed/${video.youtubeId}`}
+                    title={video.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <div className="p-5">
+                  <p className="text-red-500 text-xs font-black uppercase">
+                    {video.label}
+                  </p>
+                  <h3 className="text-xl font-black mt-1">{video.title}</h3>
+                  <p className="text-zinc-400 text-sm mt-2">
+                    Replace YOUR_VIDEO_ID_HERE with the real YouTube video ID.
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className="max-w-7xl mx-auto px-5 py-10 grid md:grid-cols-3 gap-6">
+          <Card
+            icon={<BookOpen />}
+            title="Books & Ebooks"
+            text="Hoodlum Soldier, Soldier 2 Convict, Raising Sons, From Prison to Purpose, business guides, and music monetization ebooks."
+          />
+          <Card
+            icon={<Music />}
+            title="Music Catalog"
+            text="Official HOODSTAR365 music, EPs, singles, downloads, streaming links, and exclusive fan drops."
+          />
+          <Card
+            icon={<Shirt />}
+            title="Survivor Collection"
+            text="1 of 1 hand-painted merchandise created by HOODSTAR365. Premium collector pieces."
+          />
+          <Card
+            icon={<Mic />}
+            title="Respect Da Game Podcast"
+            text="Real talk, artist interviews, social issues, business lessons, and independent media conversations."
+          />
+          <Card
+            icon={<Smartphone />}
+            title="SpeekZone & Apps"
+            text="SpeekZone, Doodee, AI tools, creator platforms, and future HSW365 tech products."
+          />
+          <Card
+            icon={<Heart />}
+            title="Support Recovery"
+            text="Support cancer treatment recovery, rebuilding, and the independent creator movement."
+          />
+        </section>
+        <section id="services" className="max-w-7xl mx-auto px-5 py-16">
+          <SectionTitle
+            icon={<Star />}
+            title="Artist Services"
+            subtitle="Paid promotion opportunities for indie artists, creators, authors, and entrepreneurs."
+          />
+          <div className="grid md:grid-cols-4 gap-5">
+            {services.map((service) => (
+              <div
+                key={service.name}
+                className="bg-zinc-950 border border-yellow-500/50 rounded-3xl p-6"
+              >
+                <p className="text-yellow-500 text-3xl font-black">
+                  {service.price}
+                </p>
+                <h3 className="font-black mt-3">{service.name}</h3>
+                <a
+                  href={ARTIST_EMAIL}
+                  className="mt-5 inline-flex items-center gap-2 bg-yellow-500 text-black px-4 py-3 rounded-xl font-black text-sm"
+                >
+                  <Send size={16} /> Submit Now
+                </a>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section id="booking" className="max-w-7xl mx-auto px-5 py-16">
+          <div className="bg-gradient-to-br from-red-700 to-black border border-red-600 rounded-3xl p-8 md:p-12">
+            <SectionTitle
+              icon={<Mic />}
+              title="Book Hoodstar365"
+              subtitle="Bring HOODSTAR365 to schools, colleges, podcasts, community events, prisons, veteran events, and business platforms."
+            />
+            <div className="grid md:grid-cols-3 gap-4 mb-8">
+              <div className="bg-black/40 rounded-2xl p-5">Motivational Speaking</div>
+              <div className="bg-black/40 rounded-2xl p-5">Artist Interviews</div>
+              <div className="bg-black/40 rounded-2xl p-5">Business & Media Talks</div>
+            </div>
+            <a
+              href={BOOKING_EMAIL}
+              className="inline-flex items-center gap-2 bg-white text-black px-6 py-4 rounded-xl font-black"
+            >
+              <Mail size={20} /> Book@Hoodstar365.com
+            </a>
+          </div>
+        </section>
+        <section id="support" className="max-w-7xl mx-auto px-5 py-16">
+          <SectionTitle
+            icon={<Heart />}
+            title="Support The Movement"
+            subtitle="Support by buying books, music, merch, artist services, subscriptions, or donating directly."
+          />
+          <div className="grid md:grid-cols-4 gap-5">
+            <a
+              href={CASHAPP}
+              className="bg-green-600 hover:bg-green-700 rounded-3xl p-6 font-black flex items-center gap-3"
+            >
+              <DollarSign /> Cash App $hsw365
+            </a>
+            <a
+              href={GUMROAD}
+              className="bg-white text-black hover:bg-zinc-200 rounded-3xl p-6 font-black flex items-center gap-3"
+            >
+              <BookOpen /> Shop Products
+            </a>
+            <a
+              href={STRIPE}
+              className="bg-purple-600 hover:bg-purple-700 rounded-3xl p-6 font-black flex items-center gap-3"
+            >
+              <Crown /> Stripe Checkout
+            </a>
+            <a
+              href={PAYPAL}
+              className="bg-blue-600 hover:bg-blue-700 rounded-3xl p-6 font-black flex items-center gap-3"
+            >
+              <Headphones /> PayPal
+            </a>
+          </div>
+          <p className="text-zinc-500 text-sm mt-5">
+            Replace STRIPE and PAYPAL links at the top of this file when ready.
+          </p>
+        </section>
+      </main>
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-zinc-950 border-t border-red-600 p-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div>
+            <p className="font-black text-red-500 uppercase text-sm">
+              Live Now: Hoodstar365 TV Radio
+            </p>
+            <p className="text-xs text-zinc-400">
+              Indie music, interviews, podcasts, and future stars
+            </p>
+          </div>
+          <audio controls className="w-full md:w-[420px]">
+            <source src={RADIO_STREAM} type="audio/mpeg" />
+          </audio>
+        </div>
+      </div>
+      <footer className="border-t border-zinc-800 py-10 text-center text-zinc-500">
+        <p className="font-black text-white">
+          HSW<span className="text-red-600">365</span> MEDIA
+        </p>
+        <p>© 2026 HSW365 Media. Built by HOODSTAR365.</p>
+        <p>Booking: Book@Hoodstar365.com | Cash App: $hsw365</p>
+      </footer>
+    </div>
+  );
+}
