@@ -1,396 +1,995 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HSW365Media — Professional Web Design for Local Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#0A0A0F;color:#D8D8E8;font-family:'Inter',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+:root{
+  --bg:#0A0A0F;
+  --s1:#0F0F16;
+  --s2:#13131C;
+  --card:#181824;
+  --b1:#222232;
+  --b2:#2E2E42;
+  --pu:#7C3AED;
+  --pu-l:#9155FF;
+  --pu-d:#5B21B6;
+  --acc:#C4B5FD;
+  --wh:#F0F0F8;
+  --md:#7070A0;
+  --dm:#3A3A55;
+  --head:'Barlow Condensed',sans-serif;
+  --body:'Barlow',sans-serif;
+}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--pu)}
 
-  <title>HSW365 Media | Hoodstar365</title>
-  <meta name="description" content="HSW365 Media by Hoodstar365 - live radio, music videos, books, podcasts, merch, artist services, apps, memberships, iRUN AI content engine, and creator opportunities." />
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  height:60px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  background:rgba(10,10,15,0.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b1);
+}
+.logo{
+  font-family:var(--head);font-size:18px;font-weight:900;
+  letter-spacing:2px;color:var(--wh);text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;text-decoration:none;
+}
+.logo-mark{
+  width:28px;height:28px;background:var(--pu);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:900;color:#fff;letter-spacing:0;
+  flex-shrink:0;
+}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{
+  color:var(--md);text-decoration:none;font-size:13px;
+  font-weight:500;letter-spacing:0.02em;transition:color 0.15s;
+  font-family:var(--body);
+}
+.nav-links a:hover{color:var(--wh)}
+.nav-right{display:flex;gap:10px;align-items:center}
+.btn-ghost{
+  border:1px solid var(--b2);color:var(--md);padding:8px 18px;
+  border-radius:4px;font-size:13px;font-weight:600;text-decoration:none;
+  transition:all 0.15s;font-family:var(--body);letter-spacing:0.02em;
+}
+.btn-ghost:hover{border-color:var(--pu-l);color:var(--wh)}
+.btn-cta{
+  background:var(--pu);color:#fff;padding:9px 20px;border-radius:4px;
+  font-size:13px;font-weight:700;text-decoration:none;
+  transition:all 0.15s;font-family:var(--body);letter-spacing:0.02em;
+}
+.btn-cta:hover{background:var(--pu-d)}
 
-  <script src="https://cdn.tailwindcss.com"></script>
+/* HERO */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:100px 48px 80px;position:relative;overflow:hidden;
+}
+.hero-grad{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 70% at 80% 40%,rgba(124,58,237,0.08) 0%,transparent 65%),
+    radial-gradient(ellipse 30% 40% at 10% 80%,rgba(124,58,237,0.04) 0%,transparent 60%);
+}
+.hero-grid{
+  position:absolute;inset:0;pointer-events:none;opacity:0.025;
+  background-image:linear-gradient(var(--b1) 1px,transparent 1px),linear-gradient(90deg,var(--b1) 1px,transparent 1px);
+  background-size:80px 80px;
+}
+.hero-inner{
+  position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.h-eyebrow{
+  display:flex;align-items:center;gap:10px;margin-bottom:24px;
+}
+.h-dot{width:6px;height:6px;background:#EF4444;border-radius:50%}
+.h-eyebrow span{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:600;
+  color:var(--md);letter-spacing:0.12em;text-transform:uppercase;
+}
+h1{
+  font-family:var(--head);font-size:clamp(52px,6vw,96px);
+  font-weight:900;line-height:0.9;letter-spacing:-0.5px;
+  text-transform:uppercase;color:var(--wh);margin-bottom:28px;
+}
+h1 .hl{color:var(--pu-l)}
+.h-sub{
+  font-size:16px;line-height:1.75;color:var(--md);
+  max-width:460px;margin-bottom:40px;font-family:var(--body);font-weight:400;
+}
+.h-sub strong{color:var(--wh);font-weight:600}
+.h-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:52px}
+.btn-primary{
+  background:var(--pu);color:#fff;padding:14px 28px;border-radius:4px;
+  font-weight:700;font-size:14px;text-decoration:none;
+  transition:all 0.2s;letter-spacing:0.03em;font-family:var(--body);
+  box-shadow:0 4px 24px rgba(124,58,237,0.25);
+}
+.btn-primary:hover{background:var(--pu-d);transform:translateY(-1px);box-shadow:0 8px 32px rgba(124,58,237,0.35)}
+.btn-secondary{
+  border:1px solid var(--b2);color:var(--wh);padding:14px 28px;
+  border-radius:4px;font-weight:600;font-size:14px;text-decoration:none;
+  transition:all 0.2s;font-family:var(--body);
+}
+.btn-secondary:hover{border-color:var(--pu-l);color:var(--pu-l)}
+.h-trust{display:flex;gap:32px}
+.trust-item{font-size:11px;color:var(--md);font-family:'Inter',sans-serif;letter-spacing:0.05em;text-transform:uppercase}
+.trust-item strong{display:block;font-family:var(--head);font-size:28px;font-weight:900;color:var(--wh);letter-spacing:0;text-transform:none;line-height:1;margin-bottom:4px}
+.trust-item strong em{color:var(--pu-l);font-style:normal}
+
+/* HERO RIGHT — Browser mockup */
+.browser{
+  background:var(--card);border:1px solid var(--b1);
+  border-radius:10px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.03);
+}
+.browser-bar{
+  background:var(--s2);padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--b1);
+}
+.b-dots{display:flex;gap:5px}
+.b-dot{width:10px;height:10px;border-radius:50%}
+.b-url{
+  flex:1;background:var(--s1);border-radius:3px;
+  padding:5px 12px;font-size:10px;color:var(--dm);
+  font-family:'Inter',sans-serif;margin:0 10px;
+  border:1px solid var(--b1);
+}
+.b-body{padding:0}
+/* mock site inside browser */
+.mock-nav{
+  background:#0F0F16;padding:12px 20px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--b1);
+}
+.mock-logo-bar{font-size:11px;font-weight:800;color:var(--wh);letter-spacing:1px;text-transform:uppercase}
+.mock-nav-links{display:flex;gap:14px}
+.mock-nav-links span{font-size:8px;color:var(--md)}
+.mock-nav-btn{background:var(--pu);color:#fff;font-size:8px;font-weight:700;padding:4px 10px;border-radius:2px;letter-spacing:0.05em}
+.mock-hero{
+  background:linear-gradient(135deg,#0F0F16,#161025);
+  padding:28px 20px;text-align:center;
+  border-bottom:1px solid var(--b1);
+}
+.mock-h1{font-family:var(--head);font-size:20px;font-weight:900;text-transform:uppercase;color:var(--wh);line-height:0.95;margin-bottom:8px}
+.mock-h1 span{color:var(--pu-l)}
+.mock-p{font-size:9px;color:var(--md);margin-bottom:14px;line-height:1.5;max-width:200px;margin-left:auto;margin-right:auto}
+.mock-btns{display:flex;gap:8px;justify-content:center}
+.mock-btn1{background:var(--pu);color:#fff;font-size:8px;font-weight:700;padding:6px 14px;border-radius:2px}
+.mock-btn2{border:1px solid var(--b2);color:var(--md);font-size:8px;font-weight:600;padding:6px 14px;border-radius:2px}
+.mock-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px}
+.mock-card{background:var(--s2);border-radius:4px;padding:12px;border:1px solid var(--b1)}
+.mock-card-bar{width:32px;height:3px;background:var(--pu);border-radius:2px;margin-bottom:8px}
+.mock-card-t{font-size:9px;font-weight:700;color:var(--wh);margin-bottom:4px}
+.mock-card-d{font-size:7px;color:var(--md);line-height:1.5}
+.mock-footer{background:var(--s2);padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--b1)}
+.mock-footer-t{font-size:7px;color:var(--dm)}
+.mock-footer-cta{background:var(--pu);color:#fff;font-size:7px;font-weight:700;padding:4px 10px;border-radius:2px;letter-spacing:0.05em}
+
+/* DIVIDER */
+.div-bar{background:var(--pu);padding:14px 0;overflow:hidden}
+.div-track{display:flex;white-space:nowrap;animation:scroll 22s linear infinite}
+.div-item{
+  font-family:var(--head);font-size:13px;font-weight:800;
+  letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.7);
+  padding:0 28px;display:inline-flex;align-items:center;gap:28px;
+}
+.div-item::after{content:'·';opacity:0.4}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SEC */
+.sec{padding:88px 48px}
+.si{max-width:1100px;margin:0 auto}
+.sec-eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--pu-l);font-family:'Inter',sans-serif;
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
+}
+.sec-eyebrow::before{content:'';width:16px;height:1px;background:var(--pu-l)}
+.sec-h{
+  font-family:var(--head);font-size:clamp(34px,4vw,58px);font-weight:900;
+  text-transform:uppercase;line-height:0.93;letter-spacing:0;margin-bottom:14px;color:var(--wh);
+}
+.sec-d{
+  font-size:15px;color:var(--md);line-height:1.75;
+  max-width:480px;margin-bottom:56px;font-family:var(--body);
+}
+
+/* WHO */
+.who-sec{background:var(--s1);border-top:1px solid var(--b1);border-bottom:1px solid var(--b1)}
+.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1)}
+.wc{
+  background:var(--card);padding:32px;
+  transition:background 0.2s;position:relative;
+}
+.wc:hover{background:var(--s2)}
+.wc-num{
+  font-family:'Inter',sans-serif;font-size:10px;font-weight:600;
+  color:var(--dm);letter-spacing:0.1em;margin-bottom:20px;
+}
+.wc h3{
+  font-family:var(--head);font-size:22px;font-weight:800;
+  text-transform:uppercase;letter-spacing:0.3px;color:var(--wh);margin-bottom:10px;
+}
+.wc p{font-size:13px;color:var(--md);line-height:1.7;font-family:var(--body)}
+.wc-prob{
+  margin-top:16px;padding:10px 14px;background:rgba(239,68,68,0.06);
+  border-left:2px solid rgba(239,68,68,0.5);border-radius:0 3px 3px 0;
+  font-size:11px;color:#F87171;font-family:'Inter',sans-serif;
+}
+.wc-sol{
+  margin-top:6px;padding:10px 14px;background:rgba(124,58,237,0.06);
+  border-left:2px solid rgba(124,58,237,0.5);border-radius:0 3px 3px 0;
+  font-size:11px;color:var(--acc);font-family:'Inter',sans-serif;
+}
+
+/* PACKAGES */
+.pkg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pk{
+  background:var(--card);border:1px solid var(--b1);border-radius:8px;
+  padding:28px 22px;display:flex;flex-direction:column;
+  transition:border-color 0.2s,transform 0.2s;position:relative;
+}
+.pk:hover{border-color:var(--b2);transform:translateY(-3px)}
+.pk.featured{border-color:var(--pu);background:linear-gradient(160deg,var(--card) 60%,rgba(124,58,237,0.06))}
+.pk-hot{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--pu);color:#fff;font-size:9px;font-weight:800;
+  padding:3px 14px;border-radius:3px;font-family:'Inter',sans-serif;
+  letter-spacing:0.1em;white-space:nowrap;
+}
+.pk-tier{
+  font-size:10px;font-weight:600;letter-spacing:0.15em;
+  color:var(--md);font-family:'Inter',sans-serif;margin-bottom:10px;
+  text-transform:uppercase;
+}
+.pk-price{
+  font-family:var(--head);font-size:48px;font-weight:900;
+  line-height:1;color:var(--wh);margin-bottom:3px;
+}
+.pk-price.pu{color:var(--pu-l)}
+.pk-cycle{
+  font-size:11px;color:var(--md);font-family:'Inter',sans-serif;
+  margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--b1);
+}
+.pk-list{list-style:none;display:flex;flex-direction:column;gap:9px;flex:1;margin-bottom:22px}
+.pk-list li{
+  font-size:12px;display:flex;gap:8px;line-height:1.4;
+  color:var(--wh);font-family:var(--body);align-items:flex-start;
+}
+.pk-list li::before{
+  content:'';width:14px;height:14px;border-radius:50%;
+  background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);
+  flex-shrink:0;margin-top:1px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%239155FF' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:center;background-size:10px;
+}
+.pk-list li.off{color:var(--dm)}
+.pk-list li.off::before{
+  border-color:var(--b2);
+  background-color:transparent;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 3l6 6M9 3l-6 6' stroke='%233A3A55' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.pk-btn{
+  display:block;width:100%;padding:13px;border-radius:4px;
+  font-weight:700;font-size:13px;text-align:center;text-decoration:none;
+  transition:all 0.15s;letter-spacing:0.04em;font-family:var(--body);
+  border:none;cursor:pointer;
+}
+.pb-pu{background:var(--pu);color:#fff;box-shadow:0 4px 16px rgba(124,58,237,0.25)}
+.pb-pu:hover{background:var(--pu-d)}
+.pb-o{background:transparent;border:1px solid var(--b2);color:var(--wh)}
+.pb-o:hover{border-color:var(--pu-l);color:var(--pu-l)}
+
+/* PROCESS */
+.proc-sec{background:var(--s1);border-top:1px solid var(--b1)}
+.proc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.proc-grid::before{
+  content:'';position:absolute;top:27px;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,var(--pu),rgba(124,58,237,0.2));z-index:0;
+}
+.proc-step{text-align:center;padding:0 20px;position:relative;z-index:1}
+.proc-dot{
+  width:54px;height:54px;border-radius:50%;background:var(--card);
+  border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;font-size:13px;font-weight:700;color:var(--pu-l);
+  font-family:'Inter',sans-serif;
+}
+.proc-step h4{
+  font-family:var(--head);font-size:18px;font-weight:800;
+  text-transform:uppercase;color:var(--wh);margin-bottom:8px;
+}
+.proc-step p{font-size:12px;color:var(--md);line-height:1.65;font-family:var(--body)}
+
+/* PAY TABLE */
+.pay-sec{background:var(--bg);border-top:1px solid var(--b1)}
+.pay-box{
+  background:var(--card);border:1px solid var(--b1);border-radius:8px;
+  padding:40px;max-width:860px;
+}
+.pay-box h3{
+  font-family:var(--head);font-size:32px;font-weight:900;
+  text-transform:uppercase;color:var(--wh);margin-bottom:6px;
+}
+.pay-box .pay-desc{font-size:13px;color:var(--md);margin-bottom:28px;font-family:var(--body)}
+.pt{width:100%;border-collapse:collapse}
+.pt th{
+  text-align:left;font-size:10px;font-weight:600;letter-spacing:0.12em;
+  color:var(--md);text-transform:uppercase;padding:0 0 12px;
+  border-bottom:1px solid var(--b1);font-family:'Inter',sans-serif;
+}
+.pt td{
+  padding:13px 0;font-size:13px;
+  border-bottom:1px solid rgba(34,34,50,0.5);vertical-align:middle;
+  font-family:var(--body);
+}
+.pt tr:last-child td{border-bottom:none}
+.pt td:first-child{font-weight:600;color:var(--wh);padding-right:16px}
+.pt td:nth-child(2){font-size:12px;color:var(--acc);padding-right:16px;white-space:nowrap;font-family:'Inter',sans-serif;font-weight:500}
+.pl{
+  display:inline-flex;align-items:center;
+  background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);
+  color:var(--pu-l);text-decoration:none;font-size:11px;font-weight:700;
+  font-family:'Inter',sans-serif;padding:5px 12px;border-radius:3px;
+  letter-spacing:0.05em;transition:all 0.15s;margin-right:6px;
+}
+.pl:hover{background:rgba(124,58,237,0.18)}
+.pl.ca{
+  color:#34D399;background:rgba(52,211,153,0.07);
+  border-color:rgba(52,211,153,0.2);
+}
+.pl.ca:hover{background:rgba(52,211,153,0.15)}
+.pl.em{
+  color:#F472B6;background:rgba(244,114,182,0.07);
+  border-color:rgba(244,114,182,0.2);
+}
+.pl.em:hover{background:rgba(244,114,182,0.15)}
+.pay-note{
+  background:rgba(124,58,237,0.04);border:1px solid rgba(124,58,237,0.12);
+  border-radius:6px;padding:16px 20px;margin-top:24px;
+  font-size:12px;color:var(--md);line-height:1.75;font-family:var(--body);
+}
+.pay-note strong{color:var(--pu-l)}
+
+/* FAQ */
+.faq-sec{background:var(--s1);border-top:1px solid var(--b1)}
+.faq-list{display:flex;flex-direction:column;max-width:720px;border:1px solid var(--b1);border-radius:8px;overflow:hidden}
+.fq{border-bottom:1px solid var(--b1)}
+.fq:last-child{border-bottom:none}
+.fq-q{
+  width:100%;background:transparent;border:none;
+  color:var(--wh);font-family:var(--body);font-size:14px;font-weight:600;
+  padding:20px 24px;text-align:left;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  transition:background 0.15s;
+}
+.fq-q:hover{background:var(--card)}
+.fq-ic{
+  width:20px;height:20px;border-radius:50%;border:1px solid var(--b2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--md);font-size:14px;flex-shrink:0;transition:all 0.2s;
+}
+.fq-ic.op{border-color:var(--pu);color:var(--pu);transform:rotate(45deg)}
+.fq-a{
+  display:none;padding:0 24px 20px;
+  font-size:13px;color:var(--md);line-height:1.8;font-family:var(--body);
+}
+.fq-a.op{display:block}
+
+/* CHAT */
+.chat-wrap{position:fixed;bottom:24px;right:24px;z-index:9998;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.chat-tog{
+  width:52px;height:52px;border-radius:50%;background:var(--pu);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 24px rgba(124,58,237,0.4);transition:all 0.2s;position:relative;
+}
+.chat-tog:hover{background:var(--pu-d);transform:scale(1.05)}
+.chat-tog svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.chat-notif{
+  position:absolute;top:-2px;right:-2px;width:16px;height:16px;
+  background:#EF4444;border-radius:50%;border:2px solid var(--bg);
+  font-size:8px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;
+  font-family:'Inter',sans-serif;
+}
+.chat-panel{
+  width:350px;background:var(--card);border:1px solid var(--b1);
+  border-radius:12px;overflow:hidden;display:none;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,0.7);
+  max-height:500px;
+}
+.chat-panel.open{display:flex}
+.chat-head-bar{
+  background:var(--pu);padding:14px 16px;
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.chat-av-box{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.chat-av-box svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.chat-id h4{font-size:13px;font-weight:700;color:#fff;font-family:var(--body)}
+.chat-id p{font-size:10px;color:rgba(255,255,255,0.7);font-family:'Inter',sans-serif}
+.chat-online-dot{width:7px;height:7px;background:#34D399;border-radius:50%;margin-left:auto;flex-shrink:0}
+.chat-close-btn{
+  background:transparent;border:none;color:rgba(255,255,255,0.6);
+  cursor:pointer;font-size:16px;padding:0;margin-left:4px;transition:color 0.15s;
+  line-height:1;
+}
+.chat-close-btn:hover{color:#fff}
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.chat-body::-webkit-scrollbar{width:2px}
+.chat-body::-webkit-scrollbar-thumb{background:var(--b2)}
+.msg{max-width:86%;display:flex;flex-direction:column;gap:3px}
+.msg.b{align-self:flex-start}
+.msg.u{align-self:flex-end}
+.msg-txt{padding:10px 13px;font-size:12px;line-height:1.6;font-family:var(--body)}
+.msg.b .msg-txt{background:var(--s2);border:1px solid var(--b1);color:var(--wh);border-radius:3px 8px 8px 8px}
+.msg.u .msg-txt{background:var(--pu);color:#fff;border-radius:8px 3px 8px 8px}
+.msg-time{font-size:9px;color:var(--dm);font-family:'Inter',sans-serif}
+.msg.u .msg-time{text-align:right}
+.typing-ind{display:none;gap:4px;align-items:center;padding:10px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:3px 8px 8px 8px;width:fit-content}
+.typing-ind.show{display:flex}
+.typing-ind span{width:5px;height:5px;background:var(--md);border-radius:50%;animation:td 1.2s infinite}
+.typing-ind span:nth-child(2){animation-delay:0.2s}
+.typing-ind span:nth-child(3){animation-delay:0.4s}
+@keyframes td{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-quick-row{
+  padding:10px 14px;display:flex;gap:6px;flex-wrap:wrap;
+  border-top:1px solid var(--b1);background:var(--s2);flex-shrink:0;
+}
+.qbtn{
+  background:transparent;border:1px solid var(--b1);color:var(--md);
+  padding:5px 10px;border-radius:3px;font-size:11px;cursor:pointer;
+  font-family:var(--body);transition:all 0.15s;
+}
+.qbtn:hover{border-color:var(--pu-l);color:var(--wh)}
+.chat-foot{
+  padding:12px 14px;border-top:1px solid var(--b1);
+  display:flex;gap:8px;flex-shrink:0;background:var(--card);
+}
+.chat-in{
+  flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:4px;
+  padding:9px 12px;color:var(--wh);font-size:12px;font-family:var(--body);
+  outline:none;transition:border-color 0.15s;
+}
+.chat-in:focus{border-color:var(--pu)}
+.chat-in::placeholder{color:var(--dm)}
+.chat-sub{
+  background:var(--pu);border:none;border-radius:4px;
+  width:34px;height:34px;color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s;flex-shrink:0;
+}
+.chat-sub:hover{background:var(--pu-d)}
+.chat-sub svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* FOOTER */
+footer{
+  background:var(--s1);border-top:1px solid var(--b1);
+  padding:40px 48px;display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.f-logo{font-family:var(--head);font-size:18px;font-weight:900;letter-spacing:2px;color:var(--wh);text-transform:uppercase}
+.f-logo em{font-style:normal;color:var(--pu-l)}
+.f-links{display:flex;gap:24px;flex-wrap:wrap}
+.f-links a{color:var(--md);text-decoration:none;font-size:12px;transition:color 0.15s;font-family:var(--body)}
+.f-links a:hover{color:var(--wh)}
+.f-copy{font-size:11px;color:var(--dm);font-family:'Inter',sans-serif}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .hero-inner{grid-template-columns:1fr}
+  .browser{display:none}
+  .pkg-grid{grid-template-columns:repeat(2,1fr)}
+  .who-grid{grid-template-columns:repeat(2,1fr);background:var(--b1)}
+  .proc-grid{grid-template-columns:repeat(2,1fr)}
+  .proc-grid::before{display:none}
+}
+@media(max-width:700px){
+  nav{padding:0 16px}
+  .nav-links{display:none}
+  .sec{padding:60px 16px}
+  .hero{padding:80px 16px 56px}
+  .pkg-grid,.who-grid,.proc-grid{grid-template-columns:1fr}
+  footer{flex-direction:column;text-align:center;padding:28px 16px}
+  .f-links{justify-content:center}
+  .chat-panel{width:calc(100vw - 32px)}
+  .pay-box{padding:24px 16px}
+}
+</style>
 </head>
+<body>
 
-<body class="bg-black text-white font-sans">
-
-  <header class="sticky top-0 z-50 bg-black/95 border-b border-red-600">
-    <div class="max-w-7xl mx-auto px-5 py-4 flex flex-col md:flex-row gap-4 justify-between items-center">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-black">
-          HSW<span class="text-red-600">365</span> MEDIA
-        </h1>
-        <p class="text-xs text-gray-400">Music • Books • Radio • Podcasts • Apps • Merch • AI</p>
-      </div>
-
-      ```html
-<nav class="flex flex-wrap justify-center gap-4 text-xs font-bold uppercase">
-
-  <a href="#top" class="hover:text-red-500">
-    Home
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">H</div>
+    HSW365Media
   </a>
-
-  <a href="#radio" class="hover:text-red-500">
-    Radio
-  </a>
-
-  <a href="#videos" class="hover:text-red-500">
-    Videos
-  </a>
-
-  <a href="#services" class="hover:text-red-500">
-    Services
-  </a>
-
-  <a href="#membership" class="hover:text-red-500">
-    Membership
-  </a>
-
-  <a href="#irun" class="hover:text-orange-500">
-    iRUN AI
-  </a>
-
-  <a href="#ai-roadmap" class="hover:text-red-500">
-    Roadmap
-  </a>
-
-  <a href="#booking" class="hover:text-red-500">
-    Booking
-  </a>
-
-  <a href="#support" class="hover:text-red-500">
-    Support
-  </a>
-
+  <ul class="nav-links">
+    <li><a href="#who">Who We Help</a></li>
+    <li><a href="#packages">Packages</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#pay">Pricing</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="mailto:hsw365media@gmail.com?subject=Free Quote" class="btn-ghost">Get a Quote</a>
+    <a href="#packages" class="btn-cta">Start Now</a>
+  </div>
 </nav>
-```
 
-
-      <a href="mailto:Book@Hoodstar365.com" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold text-sm">
-        BOOK NOW
-      </a>
-    </div>
-  </header>
-
-  <section class="min-h-[85vh] flex items-center px-5 py-16 bg-gradient-to-b from-zinc-950 to-black">
-    <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-      <div>
-        <p class="text-red-500 font-black tracking-widest text-sm uppercase">Built By Hoodstar365</p>
-
-        <h2 class="text-5xl md:text-7xl font-black leading-none mt-4">
-          THE HSW365<br>
-          <span class="text-red-600">MEDIA EMPIRE</span>
-        </h2>
-
-        <p class="text-gray-300 mt-6 text-lg">
-          Music, books, live radio, podcasts, apps, merch, artist services, survivor stories,
-          memberships, AI content tools, and booking opportunities all under one roof.
-        </p>
-
-        <div class="mt-8 flex flex-col sm:flex-row gap-4">
-          <a href="#radio" class="bg-red-600 px-6 py-4 rounded-xl font-black text-center">LISTEN LIVE</a>
-          <a href="https://cash.app/$hsw365" class="bg-green-600 px-6 py-4 rounded-xl font-black text-center">CASH APP $hsw365</a>
-          <a href="#irun" class="bg-orange-600 px-6 py-4 rounded-xl font-black text-center">iRUN AI ENGINE</a>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grad"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="h-eyebrow">
+        <div class="h-dot"></div>
+        <span>Now accepting new clients — NJ + Nationwide</span>
       </div>
-
-      <div class="bg-zinc-950 border border-red-600 rounded-3xl p-6">
-        <div class="aspect-video rounded-2xl bg-gradient-to-br from-red-700 to-black flex items-center justify-center text-center p-6">
-          <div>
-            <p class="text-6xl mb-4">▶</p>
-            <h3 class="text-3xl font-black">HOODSTAR365 TV RADIO</h3>
-            <p class="text-gray-400 mt-2">Home of indie artists and future stars</p>
+      <h1>Your Business<br>Deserves a<br><span class="hl">Better Website</span></h1>
+      <p class="h-sub">
+        <strong>HSW365Media</strong> builds custom, professional websites for local business owners — from scratch. We handle design, development, launch, and ongoing support. You just run your business.
+      </p>
+      <div class="h-actions">
+        <a href="#packages" class="btn-primary">View Packages &amp; Pricing</a>
+        <a href="mailto:hsw365media@gmail.com?subject=Free Quote" class="btn-secondary">Request a Free Quote</a>
+      </div>
+      <div class="h-trust">
+        <div class="trust-item"><strong>48<em>hr</em></strong>Average Launch</div>
+        <div class="trust-item"><strong>100<em>%</em></strong>Custom Design</div>
+        <div class="trust-item"><strong>12<em>+</em></strong>Industries</div>
+      </div>
+    </div>
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="b-dots">
+          <div class="b-dot" style="background:#FF5F57"></div>
+          <div class="b-dot" style="background:#FEBC2E"></div>
+          <div class="b-dot" style="background:#28C840"></div>
+        </div>
+        <div class="b-url">yourbusiness.com</div>
+      </div>
+      <div class="b-body">
+        <div class="mock-nav">
+          <div class="mock-logo-bar">Your Business</div>
+          <div class="mock-nav-links">
+            <span>Services</span><span>About</span><span>Contact</span>
+          </div>
+          <div class="mock-nav-btn">Book Now</div>
+        </div>
+        <div class="mock-hero">
+          <div class="mock-h1">Professional <span>Services</span><br>You Can Trust</div>
+          <p class="mock-p">Serving your local area with quality and dedication since day one.</p>
+          <div class="mock-btns">
+            <div class="mock-btn1">Get a Free Quote</div>
+            <div class="mock-btn2">Our Services</div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="radio" class="max-w-7xl mx-auto px-5 py-14">
-    <h2 class="text-4xl font-black mb-4">LIVE RADIO PLAYER</h2>
-
-    <div class="bg-zinc-950 border border-red-600 rounded-3xl p-6">
-      <h3 class="text-2xl font-black">Hoodstar365 TV Radio Live</h3>
-      <p class="text-gray-400 mb-5">Broadcasting indie music, interviews, podcasts, and artist promotion 24/7.</p>
-
-      <audio controls class="w-full">
-        <source src="https://stream.zeno.fm/f9mz6798g0hvv" type="audio/mpeg">
-        Your browser does not support the audio player.
-      </audio>
-
-      <a href="hoodstar365tvradio/" class="inline-block mt-6 bg-red-600 px-6 py-4 rounded-xl font-black">
-        ENTER FULL RADIO SITE
-      </a>
-    </div>
-  </section>
-
-  <section id="videos" class="max-w-7xl mx-auto px-5 py-14">
-    <h2 class="text-4xl font-black mb-4">MUSIC VIDEO PLAYER</h2>
-    <p class="text-gray-400 mb-6">Replace YOUR_VIDEO_ID_HERE with your real YouTube video ID.</p>
-
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
-        <div class="aspect-video">
-          <iframe class="w-full h-full" src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="HSW365 Music Video" allowfullscreen></iframe>
+        <div class="mock-cards">
+          <div class="mock-card"><div class="mock-card-bar"></div><div class="mock-card-t">Our Services</div><div class="mock-card-d">Everything your customers need in one place</div></div>
+          <div class="mock-card"><div class="mock-card-bar" style="background:#34D399"></div><div class="mock-card-t">Contact Us</div><div class="mock-card-d">Available 7 days a week for your needs</div></div>
+          <div class="mock-card"><div class="mock-card-bar" style="background:#F472B6"></div><div class="mock-card-t">About Us</div><div class="mock-card-d">Trusted by hundreds of local customers</div></div>
         </div>
-        <div class="p-5">
-          <p class="text-red-500 font-black text-sm">OFFICIAL VIDEO</p>
-          <h3 class="text-xl font-black">HOODSTAR365 Featured Music Video</h3>
+        <div class="mock-footer">
+          <span class="mock-footer-t">© 2025 Your Business LLC</span>
+          <span class="mock-footer-cta">Call Now</span>
         </div>
       </div>
-
-      <div class="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden">
-        <div class="aspect-video">
-          <iframe class="w-full h-full" src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="Indie Artist Spotlight" allowfullscreen></iframe>
-        </div>
-        <div class="p-5">
-          <p class="text-yellow-500 font-black text-sm">ARTIST FEATURE</p>
-          <h3 class="text-xl font-black">Indie Artist Spotlight</h3>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="max-w-7xl mx-auto px-5 py-14 grid md:grid-cols-3 gap-6">
-    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-      <h3 class="text-2xl font-black text-red-500">Books & Ebooks</h3>
-      <p class="text-gray-400 mt-2">Hoodlum Soldier, Soldier 2 Convict, Raising Sons, From Prison to Purpose, business guides, and music monetization ebooks.</p>
-    </div>
-
-    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-      <h3 class="text-2xl font-black text-red-500">Music Catalog</h3>
-      <p class="text-gray-400 mt-2">Official HOODSTAR365 music, EPs, singles, streaming links, and exclusive drops.</p>
-    </div>
-
-    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-      <h3 class="text-2xl font-black text-red-500">Survivor Collection</h3>
-      <p class="text-gray-400 mt-2">1 of 1 hand-painted merchandise created by HOODSTAR365. Premium collector pieces.</p>
-    </div>
-
-    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-      <h3 class="text-2xl font-black text-red-500">Respect Da Game Podcast</h3>
-      <p class="text-gray-400 mt-2">Real talk, artist interviews, social issues, business lessons, and media conversations.</p>
-    </div>
-
-    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-      <h3 class="text-2xl font-black text-red-500">SpeekZone & Apps</h3>
-      <p class="text-gray-400 mt-2">SpeekZone, Doodee, AI tools, creator platforms, and future HSW365 tech products.</p>
-    </div>
-
-    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6">
-      <h3 class="text-2xl font-black text-red-500">Support Recovery</h3>
-      <p class="text-gray-400 mt-2">Support cancer treatment recovery, rebuilding, and the independent creator movement.</p>
-    </div>
-  </section>
-
-  <section id="irun" class="max-w-7xl mx-auto px-5 py-14">
-    <div class="bg-gradient-to-br from-orange-700 to-black border border-orange-500 rounded-3xl p-8">
-      <h2 class="text-4xl font-black">iRUN AI CONTENT ENGINE</h2>
-
-      <p class="text-gray-300 mt-4 max-w-4xl">
-        iRUN is the future AI-powered content and promotion engine for HSW365 Media.
-        It is designed to help artists, creators, authors, brands, and entrepreneurs generate
-        social posts, promo emails, video captions, ad copy, booking pitches, and placement campaigns.
-      </p>
-
-      <div class="grid md:grid-cols-3 gap-5 mt-8">
-        <div class="bg-black/40 p-6 rounded-2xl">
-          <h3 class="text-xl font-black text-orange-400">AI Content Creation</h3>
-          <p class="text-gray-400 mt-2">Generate captions, hooks, blogs, emails, ads, scripts, hashtags, and social media content.</p>
-        </div>
-
-        <div class="bg-black/40 p-6 rounded-2xl">
-          <h3 class="text-xl font-black text-orange-400">Promotion Engine</h3>
-          <p class="text-gray-400 mt-2">Create campaigns for radio placements, mixtape slots, podcast interviews, and business ads.</p>
-        </div>
-
-        <div class="bg-black/40 p-6 rounded-2xl">
-          <h3 class="text-xl font-black text-orange-400">Future Automation</h3>
-          <p class="text-gray-400 mt-2">Email campaigns, lead management, scheduling, SMS updates, and creator tools.</p>
-        </div>
-      </div>
-
-      <div class="mt-8 grid md:grid-cols-3 gap-4">
-        <a href="mailto:Book@Hoodstar365.com?subject=iRUN AI Content Engine Inquiry" class="bg-orange-600 px-6 py-4 rounded-xl font-black text-center">
-          ACTIVATE iRUN
-        </a>
-
-        <a href="https://cash.app/$hsw365" class="bg-green-600 px-6 py-4 rounded-xl font-black text-center">
-          PAY WITH CASH APP
-        </a>
-
-        <a href="#membership" class="bg-white text-black px-6 py-4 rounded-xl font-black text-center">
-          JOIN MEMBERSHIP
-        </a>
-      </div>
-
-      <p class="text-gray-500 text-sm mt-6">
-        Automation note: email blasting, social posting, SMS, and AI assistant tools require backend services like Brevo, MailerLite, SendGrid, Twilio, Buffer, Zapier, Supabase, and OpenAI/Claude API. Version 1 presents and sells the system. Version 2 connects full automation.
-      </p>
-    </div>
-  </section>
-
-  <section id="services" class="max-w-7xl mx-auto px-5 py-14">
-    <h2 class="text-4xl font-black mb-6">ARTIST SERVICES</h2>
-
-    <div class="grid md:grid-cols-4 gap-5">
-      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
-        <p class="text-yellow-500 text-3xl font-black">$49</p>
-        <h3 class="font-black mt-2">Radio Airplay Slot</h3>
-      </div>
-
-      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
-        <p class="text-yellow-500 text-3xl font-black">$79</p>
-        <h3 class="font-black mt-2">Mixtape Slot Placement</h3>
-      </div>
-
-      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
-        <p class="text-yellow-500 text-3xl font-black">$99</p>
-        <h3 class="font-black mt-2">Podcast Interview</h3>
-      </div>
-
-      <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-6">
-        <p class="text-yellow-500 text-3xl font-black">$149</p>
-        <h3 class="font-black mt-2">Front Page Video Feature</h3>
-      </div>
-    </div>
-
-    <a href="mailto:Book@Hoodstar365.com?subject=Artist Placement Submission" class="inline-block mt-8 bg-yellow-500 text-black px-6 py-4 rounded-xl font-black">
-      SUBMIT YOUR MUSIC NOW
-    </a>
-  </section>
-
-  <section id="membership" class="max-w-7xl mx-auto px-5 py-14">
-    <div class="bg-gradient-to-br from-purple-700 to-black border border-purple-500 rounded-3xl p-8">
-      <h2 class="text-4xl font-black">HSW365 MEMBERSHIP</h2>
-      <p class="text-gray-200 mt-4 max-w-4xl">
-        Join the HSW365 membership to access discounts, priority placement reviews,
-        exclusive updates, creator opportunities, AI campaign tools, and future media benefits.
-      </p>
-
-      <div class="grid md:grid-cols-3 gap-5 mt-8">
-        <div class="bg-black/50 p-6 rounded-2xl">
-          <h3 class="text-xl font-black">Starter</h3>
-          <p class="text-3xl font-black text-purple-400 mt-2">$19.99/mo</p>
-          <p class="text-gray-400 mt-2">Basic member access and updates.</p>
-        </div>
-
-        <div class="bg-black/50 p-6 rounded-2xl border border-yellow-500">
-          <h3 class="text-xl font-black">VIP Artist</h3>
-          <p class="text-3xl font-black text-yellow-400 mt-2">$49.99/mo</p>
-          <p class="text-gray-400 mt-2">Discounts, priority reviews, and promo opportunities.</p>
-        </div>
-
-        <div class="bg-black/50 p-6 rounded-2xl">
-          <h3 class="text-xl font-black">Business Promo</h3>
-          <p class="text-3xl font-black text-purple-400 mt-2">$99.99/mo</p>
-          <p class="text-gray-400 mt-2">For brands, ads, interviews, and media exposure.</p>
-        </div>
-      </div>
-
-      <a href="#" class="inline-block mt-8 bg-purple-600 px-6 py-4 rounded-xl font-black">
-        ADD STRIPE SUBSCRIPTION LINK
-      </a>
-    </div>
-  </section>
-
-  <section id="ai-roadmap" class="max-w-7xl mx-auto px-5 py-14">
-    <div class="bg-zinc-950 border border-red-600 rounded-3xl p-8">
-      <h2 class="text-4xl font-black">HSW365 PHASE 2 ROADMAP</h2>
-      <p class="text-gray-300 mt-4 max-w-4xl">
-        Future upgrade: AI Hoodstar365 assistant, email automation, artist onboarding,
-        customer support, booking assistance, SMS notifications, business ads, promo automation,
-        subscriber dashboard, and creator campaign tracking.
-      </p>
-
-      <div class="grid md:grid-cols-3 gap-5 mt-8">
-        <div class="bg-black p-6 rounded-2xl">
-          <h3 class="text-xl font-black text-red-400">AI Hoodstar365 Assistant</h3>
-          <p class="text-gray-400 mt-2">Virtual assistant for emails, submissions, FAQs, and booking leads.</p>
-        </div>
-
-        <div class="bg-black p-6 rounded-2xl">
-          <h3 class="text-xl font-black text-red-400">Automation System</h3>
-          <p class="text-gray-400 mt-2">Automated artist placements, promo packages, text alerts, and follow-ups.</p>
-        </div>
-
-        <div class="bg-black p-6 rounded-2xl">
-          <h3 class="text-xl font-black text-red-400">Digital Ecosystem</h3>
-          <p class="text-gray-400 mt-2">Future research into creator rewards, memberships, and digital assets.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="hsw365coin" class="max-w-7xl mx-auto px-5 py-14">
-    <div class="bg-zinc-950 border border-yellow-500 rounded-3xl p-8">
-      <h2 class="text-4xl font-black text-yellow-500">HSW365 DIGITAL ASSET ROADMAP</h2>
-      <p class="text-gray-300 mt-4 max-w-4xl">
-        HSW365 Media is exploring a future digital asset ecosystem connected to the brand,
-        creator community, media network, and membership platform.
-      </p>
-      <p class="text-red-400 mt-4 text-sm font-bold">
-        Disclaimer: This is not financial advice. Digital assets carry risk. No profits,
-        returns, or investment outcomes are guaranteed.
-      </p>
-    </div>
-  </section>
-
-  <section id="security" class="max-w-7xl mx-auto px-5 py-14">
-    <div class="bg-zinc-950 border border-blue-500 rounded-3xl p-8">
-      <h2 class="text-4xl font-black text-blue-400">SECURITY & PROTECTION</h2>
-      <p class="text-gray-300 mt-4 max-w-4xl">
-        HSW365 Media protects its platform, creators, and subscribers with bot protection,
-        spam filtering, suspicious traffic blocking, secure payment links, and abuse prevention.
-        Cyberattack attempts, fraud, scraping, spam, and harmful activity may be blocked.
-      </p>
-    </div>
-  </section>
-
-  <section id="booking" class="max-w-7xl mx-auto px-5 py-14">
-    <div class="bg-gradient-to-br from-red-700 to-black border border-red-600 rounded-3xl p-8">
-      <h2 class="text-4xl font-black">BOOK HOODSTAR365</h2>
-      <p class="text-gray-200 mt-4 max-w-3xl">
-        Bring HOODSTAR365 to schools, colleges, podcasts, community events, prisons,
-        veteran events, business platforms, and creator conferences.
-      </p>
-
-      <a href="mailto:Book@Hoodstar365.com" class="inline-block mt-6 bg-white text-black px-6 py-4 rounded-xl font-black">
-        Book@Hoodstar365.com
-      </a>
-    </div>
-  </section>
-
-  <section id="support" class="max-w-7xl mx-auto px-5 py-14">
-    <h2 class="text-4xl font-black mb-6">SUPPORT THE MOVEMENT</h2>
-
-    <div class="grid md:grid-cols-4 gap-5">
-      <a href="https://cash.app/$hsw365" class="bg-green-600 rounded-3xl p-6 font-black text-center">Cash App $hsw365</a>
-      <a href="https://hsw365media.com" class="bg-white text-black rounded-3xl p-6 font-black text-center">Shop Products</a>
-      <a href="#" class="bg-purple-600 rounded-3xl p-6 font-black text-center">Stripe Checkout</a>
-      <a href="#" class="bg-blue-600 rounded-3xl p-6 font-black text-center">PayPal</a>
-    </div>
-  </section>
-
-  <div class="fixed bottom-0 left-0 right-0 bg-zinc-950 border-t border-red-600 p-3 z-50">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-3 items-center justify-between">
-      <div>
-        <p class="font-black text-red-500 text-sm">LIVE NOW: HOODSTAR365 TV RADIO</p>
-        <p class="text-xs text-gray-400">Indie music, interviews, podcasts, and future stars</p>
-      </div>
-
-      <audio controls class="w-full md:w-[420px]">
-        <source src="https://stream.zeno.fm/f9mz6798g0hvv" type="audio/mpeg">
-      </audio>
     </div>
   </div>
+</section>
 
-  <footer class="pb-32 pt-10 text-center text-gray-500 border-t border-zinc-800">
-    <p class="font-black text-white">HSW<span class="text-red-600">365</span> MEDIA</p>
-    <p>© 2026 HSW365 Media. Built by HOODSTAR365.</p>
-    <p>Booking: Book@Hoodstar365.com | Cash App: $hsw365</p>
-  </footer>
+<!-- MARQUEE -->
+<div class="div-bar">
+  <div class="div-track">
+    <span class="div-item">Restaurants</span>
+    <span class="div-item">Law Firms</span>
+    <span class="div-item">Salons &amp; Spas</span>
+    <span class="div-item">Contractors</span>
+    <span class="div-item">Real Estate</span>
+    <span class="div-item">Medical Offices</span>
+    <span class="div-item">Auto Shops</span>
+    <span class="div-item">Retail Stores</span>
+    <span class="div-item">Fitness Studios</span>
+    <span class="div-item">Consultants</span>
+    <span class="div-item">Restaurants</span>
+    <span class="div-item">Law Firms</span>
+    <span class="div-item">Salons &amp; Spas</span>
+    <span class="div-item">Contractors</span>
+    <span class="div-item">Real Estate</span>
+    <span class="div-item">Medical Offices</span>
+    <span class="div-item">Auto Shops</span>
+    <span class="div-item">Retail Stores</span>
+    <span class="div-item">Fitness Studios</span>
+    <span class="div-item">Consultants</span>
+  </div>
+</div>
 
+<!-- WHO -->
+<section id="who" class="sec who-sec">
+  <div class="si">
+    <div class="sec-eyebrow">Who We Help</div>
+    <h2 class="sec-h">Is This Your Situation?</h2>
+    <p class="sec-d">We work with business owners at every stage — from zero online presence to sites that just aren't performing.</p>
+    <div class="who-grid">
+      <div class="wc">
+        <div class="wc-num">01</div>
+        <h3>No Website Yet</h3>
+        <p>Your business is running but customers can't find you online. You're losing sales every day to competitors who show up when people search.</p>
+        <div class="wc-prob">Problem: Invisible on Google and Maps</div>
+        <div class="wc-sol">Solution: We build your site from the ground up</div>
+      </div>
+      <div class="wc">
+        <div class="wc-num">02</div>
+        <h3>Outdated Website</h3>
+        <p>Your site was built years ago and it shows. Slow load times, not mobile-friendly, and it doesn't reflect the quality of your business.</p>
+        <div class="wc-prob">Problem: Customers leave before reading a word</div>
+        <div class="wc-sol">Solution: Full redesign on any of our plans</div>
+      </div>
+      <div class="wc">
+        <div class="wc-num">03</div>
+        <h3>Not Getting Leads</h3>
+        <p>Traffic comes in but the phone doesn't ring. Your site looks okay but it isn't set up to convert visitors into paying customers.</p>
+        <div class="wc-prob">Problem: Visitors leave without contacting you</div>
+        <div class="wc-sol">Solution: We rebuild it around conversion</div>
+      </div>
+      <div class="wc">
+        <div class="wc-num">04</div>
+        <h3>No Time to Deal With It</h3>
+        <p>You know you need a better website but you're too busy running your business to figure out design, hosting, and all the technical stuff.</p>
+        <div class="wc-prob">Problem: No bandwidth, no tech knowledge</div>
+        <div class="wc-sol">Solution: We handle 100% of it for you</div>
+      </div>
+      <div class="wc">
+        <div class="wc-num">05</div>
+        <h3>Need Local Visibility</h3>
+        <p>You serve customers in your city or town and need to rank when locals search for your services on Google and Google Maps.</p>
+        <div class="wc-prob">Problem: Not showing up in local search results</div>
+        <div class="wc-sol">Solution: Local SEO built into every package</div>
+      </div>
+      <div class="wc">
+        <div class="wc-num">06</div>
+        <h3>Want to Sell Online</h3>
+        <p>You're ready to accept orders, sell products, or let customers book appointments directly through your website without calling.</p>
+        <div class="wc-prob">Problem: No way to sell or book online</div>
+        <div class="wc-sol">Solution: Full store or booking system included</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section id="packages" class="sec">
+  <div class="si">
+    <div class="sec-eyebrow">Packages</div>
+    <h2 class="sec-h">Choose Your Plan</h2>
+    <p class="sec-d">Straightforward pricing with no hidden fees. 50% deposit to start — balance due on launch day.</p>
+    <div class="pkg-grid">
+
+      <div class="pk">
+        <div class="pk-tier">Starter</div>
+        <div class="pk-price">$499</div>
+        <div class="pk-cycle">one-time build fee &nbsp;+&nbsp; $49/mo</div>
+        <ul class="pk-list">
+          <li>Up to 5 custom pages</li>
+          <li>Mobile-first responsive design</li>
+          <li>Contact &amp; quote request form</li>
+          <li>Basic on-page SEO</li>
+          <li>Google Maps integration</li>
+          <li>SSL certificate &amp; hosting</li>
+          <li>2 rounds of revisions</li>
+          <li>Launch within 48–72 hours</li>
+          <li class="off">Online store</li>
+          <li class="off">Appointment booking</li>
+        </ul>
+        <a href="https://buy.stripe.com/14A14n2CXbEG3ga9ZV3VC0b" target="_blank" class="pk-btn pb-o">Get Started — $499</a>
+      </div>
+
+      <div class="pk featured">
+        <div class="pk-hot">Most Popular</div>
+        <div class="pk-tier">Growth</div>
+        <div class="pk-price pu">$999</div>
+        <div class="pk-cycle">one-time build fee &nbsp;+&nbsp; $99/mo</div>
+        <ul class="pk-list">
+          <li>Up to 10 custom pages</li>
+          <li>Premium brand-focused design</li>
+          <li>Lead capture &amp; conversion forms</li>
+          <li>Full on-page SEO optimization</li>
+          <li>Google Analytics setup</li>
+          <li>SSL certificate &amp; hosting</li>
+          <li>3 rounds of revisions</li>
+          <li>Basic online store (up to 20 items)</li>
+          <li>Launch within 48–72 hours</li>
+          <li class="off">Appointment booking system</li>
+        </ul>
+        <a href="https://buy.stripe.com/8x2eVdfpJ1022c67RN3VC0c" target="_blank" class="pk-btn pb-pu">Get Started — $999</a>
+      </div>
+
+      <div class="pk">
+        <div class="pk-tier">Business</div>
+        <div class="pk-price">$1,999</div>
+        <div class="pk-cycle">one-time build fee &nbsp;+&nbsp; $199/mo</div>
+        <ul class="pk-list">
+          <li>Up to 20 custom pages</li>
+          <li>Full brand identity system</li>
+          <li>Advanced conversion funnels</li>
+          <li>Full SEO + local search targeting</li>
+          <li>Complete online store</li>
+          <li>Appointment booking system</li>
+          <li>AI chat integration</li>
+          <li>Unlimited revisions</li>
+          <li>Priority hosting</li>
+          <li class="off">Dedicated account manager</li>
+        </ul>
+        <a href="https://buy.stripe.com/dRm7sL91lfUW8Au3Bx3VC0d" target="_blank" class="pk-btn pb-o">Get Started — $1,999</a>
+      </div>
+
+      <div class="pk">
+        <div class="pk-tier">Elite</div>
+        <div class="pk-price">$4,999</div>
+        <div class="pk-cycle">50% deposit to start &nbsp;+&nbsp; $399/mo</div>
+        <ul class="pk-list">
+          <li>Unlimited pages</li>
+          <li>Complete brand overhaul</li>
+          <li>CRM integration</li>
+          <li>Enterprise SEO strategy</li>
+          <li>Full store + subscription billing</li>
+          <li>AI automation suite</li>
+          <li>Weekly content updates</li>
+          <li>99.9% uptime hosting</li>
+          <li>Unlimited revisions</li>
+          <li>Dedicated account manager</li>
+        </ul>
+        <a href="mailto:hsw365media@gmail.com?subject=Elite Website Build Inquiry" class="pk-btn pb-o">Contact Us for Elite</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" class="sec proc-sec">
+  <div class="si">
+    <div class="sec-eyebrow">How It Works</div>
+    <h2 class="sec-h">From Signup to Live</h2>
+    <p class="sec-d">A simple 4-step process. You stay focused on your business while we handle everything.</p>
+    <div class="proc-grid">
+      <div class="proc-step">
+        <div class="proc-dot">01</div>
+        <h4>Choose a Plan</h4>
+        <p>Select your package and complete the deposit. The whole thing takes about 5 minutes.</p>
+      </div>
+      <div class="proc-step">
+        <div class="proc-dot">02</div>
+        <h4>Onboarding Call</h4>
+        <p>A 30-minute call where we gather your brand details, content, goals, and preferences.</p>
+      </div>
+      <div class="proc-step">
+        <div class="proc-dot">03</div>
+        <h4>Design &amp; Build</h4>
+        <p>We design and build your site in 48–72 hours, then send it over for your review and approval.</p>
+      </div>
+      <div class="proc-step">
+        <div class="proc-dot">04</div>
+        <h4>Launch &amp; Support</h4>
+        <p>We take your site live, configure analytics, and remain available for support every month.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAY TABLE -->
+<section id="pay" class="sec pay-sec">
+  <div class="si">
+    <div class="sec-eyebrow">Checkout</div>
+    <h2 class="sec-h">Pay &amp; Get Started</h2>
+    <p class="sec-d">Pay securely via Stripe or send via Cash App. Every service is one click away.</p>
+    <div class="pay-box">
+      <h3>All Services</h3>
+      <p class="pay-desc">Secure checkout powered by Stripe. Cash App <strong style="color:#34D399">$hsw365</strong> accepted on all orders. 50% deposit starts your project immediately.</p>
+      <table class="pt">
+        <thead>
+          <tr><th>Service</th><th>Price</th><th>Pay Now</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Starter Website Build</td><td>$499 one-time</td><td><a href="https://buy.stripe.com/14A14n2CXbEG3ga9ZV3VC0b" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Growth Website Build</td><td>$999 one-time</td><td><a href="https://buy.stripe.com/8x2eVdfpJ1022c67RN3VC0c" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Business Website Build</td><td>$1,999 one-time</td><td><a href="https://buy.stripe.com/dRm7sL91lfUW8Au3Bx3VC0d" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Elite Website Build</td><td>$4,999 — invoiced</td><td><a href="mailto:hsw365media@gmail.com?subject=Elite Build Inquiry" class="pl em">Contact Us</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Starter Maintenance</td><td>$49 / month</td><td><a href="https://buy.stripe.com/cNi14ndhB102cQK4FB3VC0e" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Growth Maintenance</td><td>$99 / month</td><td><a href="https://buy.stripe.com/dRm8wPfpJ4cecQK1tp3VC0f" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Business Maintenance</td><td>$199 / month</td><td><a href="https://buy.stripe.com/6oUfZhb9tbEG2c6c833VC0g" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Elite Maintenance</td><td>$399 / month</td><td><a href="https://buy.stripe.com/00wfZhb9t5gi5oi9ZV3VC0h" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>AI Chatbot Setup</td><td>$299 one-time</td><td><a href="https://buy.stripe.com/cNifZh4L5fUW4ke8VR3VC0i" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Email Marketing Setup</td><td>$199 one-time</td><td><a href="https://buy.stripe.com/bJefZh4L538a4keegb3VC0j" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Content Writing (per page)</td><td>$149 per page</td><td><a href="https://buy.stripe.com/4gMaEX6TdeQS2c68VR3VC0k" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+          <tr><td>Priority Maintenance Upgrade</td><td>$199 / month</td><td><a href="https://buy.stripe.com/14AcN5dhBaAC03Y2xt3VC0l" target="_blank" class="pl">Stripe</a><a href="https://cash.app/$hsw365" target="_blank" class="pl ca">Cash App</a></td></tr>
+        </tbody>
+      </table>
+      <div class="pay-note">
+        <strong>Cash App payments:</strong> Send to <strong>$hsw365</strong> and include your business name and service in the payment note. You will receive a confirmation email within 1 hour. For the Elite plan, we'll send a custom invoice directly to your email. Questions? Reach us at <strong>hsw365media@gmail.com</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec faq-sec">
+  <div class="si">
+    <div class="sec-eyebrow">FAQ</div>
+    <h2 class="sec-h">Common Questions</h2>
+    <p class="sec-d" style="margin-bottom:36px">Answers to what most business owners ask before getting started.</p>
+    <div class="faq-list">
+      <div class="fq">
+        <button class="fq-q" onclick="doFaq(this)">How quickly will my website be completed? <span class="fq-ic">+</span></button>
+        <div class="fq-a">Most websites are designed, built, and ready for your review within 48 to 72 hours of the onboarding call. After you approve the design and request any revisions, we typically launch within a few days — not weeks or months.</div>
+      </div>
+      <div class="fq">
+        <button class="fq-q" onclick="doFaq(this)">What do I need to provide to get started? <span class="fq-ic">+</span></button>
+        <div class="fq-a">Not much. Your business name, a description of what you do, any existing photos or logo files, and your contact information. We handle layout, design, and content structure. If you need professional photos or written copy, those are available as add-ons.</div>
+      </div>
+      <div class="fq">
+        <button class="fq-q" onclick="doFaq(this)">Can you redesign or update my current website? <span class="fq-ic">+</span></button>
+        <div class="fq-a">Yes. Any of our plans can be applied to a full redesign of an existing site. Just mention your current site when you reach out and we will assess what needs to be updated, migrated, or rebuilt from scratch.</div>
+      </div>
+      <div class="fq">
+        <button class="fq-q" onclick="doFaq(this)">What does monthly maintenance include? <span class="fq-ic">+</span></button>
+        <div class="fq-a">Monthly maintenance covers hosting, SSL certificate renewal, security monitoring and updates, performance optimization, and minor content updates such as text changes, updated hours, or swapping photos. It keeps your site running fast, secure, and up to date every month.</div>
+      </div>
+      <div class="fq">
+        <button class="fq-q" onclick="doFaq(this)">How does the payment structure work? <span class="fq-ic">+</span></button>
+        <div class="fq-a">We collect a 50% deposit to begin your project. The remaining balance is due on the day your site launches. Monthly maintenance plans are billed automatically each month and can be cancelled at any time. We accept all major credit cards via Stripe, or Cash App at $hsw365.</div>
+      </div>
+      <div class="fq">
+        <button class="fq-q" onclick="doFaq(this)">Do you work with businesses outside of New Jersey? <span class="fq-ic">+</span></button>
+        <div class="fq-a">Yes. While we are headquartered in the Vineland and Hammonton NJ area, we work with business owners nationwide. All communication, reviews, and approvals happen remotely via email, video call, and shared documents.</div>
+      </div>
+      <div class="fq">
+        <button class="fq-q" onclick="doFaq(this)">Will my website rank on Google? <span class="fq-ic">+</span></button>
+        <div class="fq-a">Every site we build includes on-page SEO fundamentals — proper heading structure, meta descriptions, page speed optimization, mobile responsiveness, and Google indexing. Growth plans and above include full SEO optimization and local search targeting to help you appear when people in your area search for your services.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">HSW<em>365</em>Media</div>
+  <div class="f-links">
+    <a href="#who">Who We Help</a>
+    <a href="#packages">Packages</a>
+    <a href="#process">Process</a>
+    <a href="#pay">Pricing</a>
+    <a href="mailto:hsw365media@gmail.com">Contact</a>
+  </div>
+  <div class="f-copy">hsw365media@gmail.com &nbsp;&middot;&nbsp; $hsw365 &nbsp;&middot;&nbsp; &copy; 2025 HSW365Media LLC</div>
+</footer>
+
+<!-- CHAT WIDGET -->
+<div class="chat-wrap">
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-head-bar">
+      <div class="chat-av-box">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="chat-id">
+        <h4>HSW365 Support</h4>
+        <p>Web Design &amp; Development</p>
+      </div>
+      <div class="chat-online-dot"></div>
+      <button class="chat-close-btn" onclick="toggleChat()">&times;</button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="msg b">
+        <div class="msg-txt">Hello. I'm the HSW365Media support agent. I can answer questions about our website packages, pricing, timelines, or anything related to web and app development. What can I help you with?</div>
+        <div class="msg-time">HSW365 Support &middot; Just now</div>
+      </div>
+    </div>
+    <div class="typing-ind" id="typingInd"><span></span><span></span><span></span></div>
+    <div class="chat-quick-row" id="quickRow">
+      <button class="qbtn" onclick="askQuick('What packages do you offer?')">Packages</button>
+      <button class="qbtn" onclick="askQuick('How does payment work?')">Payment</button>
+      <button class="qbtn" onclick="askQuick('How long does a website take?')">Timeline</button>
+      <button class="qbtn" onclick="askQuick('Do you build e-commerce websites?')">E-Commerce</button>
+    </div>
+    <div class="chat-foot">
+      <input class="chat-in" id="chatInput" placeholder="Ask a question..." onkeydown="if(event.key==='Enter')submitMsg()"/>
+      <button class="chat-sub" onclick="submitMsg()">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+  <div style="position:relative">
+    <button class="chat-tog" onclick="toggleChat()" id="chatTog">
+      <svg id="chatIconOpen" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <svg id="chatIconClose" viewBox="0 0 24 24" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="chat-notif" id="chatNotif">1</div>
+  </div>
+</div>
+
+<script>
+// FAQ
+function doFaq(btn){
+  var ic=btn.querySelector('.fq-ic'),ans=btn.nextElementSibling,open=ans.classList.contains('op');
+  document.querySelectorAll('.fq-a').forEach(function(a){a.classList.remove('op')});
+  document.querySelectorAll('.fq-ic').forEach(function(i){i.classList.remove('op')});
+  if(!open){ans.classList.add('op');ic.classList.add('op')}
+}
+
+// CHAT
+var chatOpen=false;
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatPanel').classList.toggle('open',chatOpen);
+  document.getElementById('chatIconOpen').style.display=chatOpen?'none':'block';
+  document.getElementById('chatIconClose').style.display=chatOpen?'block':'none';
+  document.getElementById('chatNotif').style.display=chatOpen?'none':'flex';
+  if(chatOpen)document.getElementById('chatInput').focus();
+}
+function askQuick(q){
+  document.getElementById('quickRow').style.display='none';
+  addMsg(q,'u');
+  getResponse(q);
+}
+function submitMsg(){
+  var inp=document.getElementById('chatInput');
+  var txt=inp.value.trim();
+  if(!txt)return;
+  inp.value='';
+  document.getElementById('quickRow').style.display='none';
+  addMsg(txt,'u');
+  getResponse(txt);
+}
+function addMsg(text,who){
+  var body=document.getElementById('chatBody');
+  var el=document.createElement('div');
+  el.className='msg '+who;
+  var now=new Date();
+  var t=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  el.innerHTML='<div class="msg-txt">'+text+'</div><div class="msg-time">'+(who==='b'?'HSW365 Support':'You')+' &middot; '+t+'</div>';
+  body.appendChild(el);
+  body.scrollTop=body.scrollHeight;
+}
+function showTyping(){
+  var t=document.getElementById('typingInd');
+  t.classList.add('show');
+  document.getElementById('chatBody').scrollTop=99999;
+}
+function hideTyping(){document.getElementById('typingInd').classList.remove('show')}
+async function getResponse(msg){
+  showTyping();
+  try{
+    var sys='You are the HSW365Media web design support agent. Respond professionally and helpfully to questions about web design services and app development.\n\nHSW365Media Packages:\n- Starter: $499 build + $49/mo. Up to 5 pages, mobile design, contact form, basic SEO, SSL, hosting.\n- Growth: $999 build + $99/mo. Up to 10 pages, full SEO, analytics, basic e-commerce.\n- Business: $1,999 build + $199/mo. Up to 20 pages, full store, booking system, AI chat.\n- Elite: $4,999 build + $399/mo. Unlimited pages, CRM, enterprise SEO, dedicated manager.\n- Add-ons: AI Chatbot $299, Email Marketing $199, Content Writing $149/page, Priority Maintenance $199/mo.\n- Payment: 50% deposit to start, balance on launch day. Stripe or Cash App $hsw365.\n- Timeline: 48-72 hours to build.\n- Contact: hsw365media@gmail.com.\n- Based in Vineland/Hammonton NJ, serve clients nationwide.\n\nAlso answer general questions about web design, SEO, e-commerce, mobile apps, and digital marketing. Keep responses concise and professional.';
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,system:sys,messages:[{role:'user',content:msg}]})
+    });
+    var data=await res.json();
+    hideTyping();
+    var reply=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:'For a detailed answer, please email us at hsw365media@gmail.com — we respond within one business hour.';
+    addMsg(reply,'b');
+  }catch(e){
+    hideTyping();
+    addMsg('Thank you for your question. For a prompt response, please email hsw365media@gmail.com or use the Request a Free Quote button at the top of the page.','b');
+  }
+}
+</script>
 </body>
 </html>
-```
 
