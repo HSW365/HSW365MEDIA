@@ -729,7 +729,7 @@
 
     var html = '<div class="page-head"><div><h1>Owner panel</h1><p>' + plural(members.length, 'channel') + ' / ' + plural(paying, 'paid member') + ' / ' + count(res[1].count) + ' videos / ' + plural(r.data.length, 'open report') + '</p></div></div>' +
       '<section class="switch"><div><h2>Creator membership: ' + (pay ? 'on' : 'off') + '</h2><p>' +
-      (pay ? 'New channels get 7 free days, then need the $7 a month membership to go live, upload and chat. Watching is free.' : 'Everything is free for everyone. Only the $10 verified checkmark is sold.') +
+      (pay ? 'New channels get 7 free days, then need the $7 a month membership to go live, upload and chat. Watching is free.' : 'Everything is free for everyone. Only the $10 a month verified checkmark is sold.') +
       '</p></div><button class="btn" id="payTog">' + (pay ? 'Make everything free' : 'Turn the $7 membership on') + '</button></section>';
 
     html += '<h2 class="sec">Reports</h2>';
@@ -859,9 +859,9 @@
     view.innerHTML = '<div class="page-head"><div><h1>Membership</h1><p>Watching is always free. Membership is for people who go live, upload and chat.</p></div></div>' +
       '<div class="plans"><section class="plan"><span class="feature-tag">Creator membership</span><div class="price"><b>$7</b><span>per month</span></div>' + mState +
       '<ul><li>Go live from your camera or screen</li><li>Upload videos to your channel</li><li>Live chat and comments</li><li>First 7 days free, no card needed</li><li>Cancel any time</li></ul>' + mBtn + '</section>' +
-      '<section class="plan v"><span class="feature-tag">Verified</span><div class="price"><b>$10</b><span>one time</span></div>' + vState +
-      '<ul><li>Green checkmark next to your name' + VCHECK + '</li><li>Shows on your channel, videos, streams and chat</li><li>Pay once, keep it</li></ul>' +
-      (a.verified ? '' : '<button class="btn verify" id="vBuy">Get verified</button>') + '</section></div>' +
+      '<section class="plan v"><span class="feature-tag">Verified</span><div class="price"><b>$10</b><span>per month</span></div>' + vState +
+      '<ul><li>Green checkmark next to your name' + VCHECK + '</li><li>Shows on your channel, videos, streams and chat</li><li>Stays on while you subscribe. Cancel any time</li></ul>' +
+      (a.verified ? (a.has_billing && !a.owner ? '<button class="btn" id="vManage">Manage or cancel</button>' : '') : '<button class="btn verify" id="vBuy">Get verified</button>') + '</section></div>' +
       '<p class="hint stat" style="margin-top:22px">Payments are handled by Stripe. Billing questions: <a class="link" href="mailto:' + CONTACT + '">' + CONTACT + '</a></p>';
     function wire(id, body, label, amount) {
       var b = document.getElementById(id);
@@ -875,8 +875,9 @@
         toast(j.error || 'Could not open checkout');
       };
     }
-    wire('mJoin', { a: 'checkout', kind: 'member' }, 'Start membership', '$7');
-    wire('vBuy', { a: 'checkout', kind: 'verify' }, 'Get verified', '$10');
+    wire('mJoin', { a: 'checkout', kind: 'member' }, 'Start membership', '$7 for the month');
+    wire('vBuy', { a: 'checkout', kind: 'verify' }, 'Get verified', '$10 for the month');
+    wire('vManage', { a: 'portal' }, 'Manage verification', '');
     wire('mManage', { a: 'portal' }, 'Manage membership', '');
   }
 
@@ -1495,7 +1496,7 @@
     var m = '<a class="link" href="mailto:' + CONTACT + '">' + CONTACT + '</a>';
     view.innerHTML = '<div class="legal"><div class="page-head"><div><h1>Terms, rules and copyright</h1><p>HSW365 Stream is operated by HSW365 Media LLC.</p></div></div>' +
       '<h2>Using HSW365 Stream</h2><p>You must be at least 13 years old to create a channel. You are responsible for your account and for everything posted from it. The service is provided as is, without warranties, and may change or be interrupted at any time.</p>' +
-      '<h2>Membership and payments</h2><p>Creating a channel is free and watching is always free. New channels get 7 days of creator access (going live, uploading, commenting and chatting) at no charge and without a card. After that, creator access is $7 per month, billed monthly through Stripe until you cancel. You can cancel any time from the Membership page and keep access through the period you paid for. The verified green checkmark is a separate one-time $10 purchase. Payments are not refundable except where the law requires it. Verification can be removed from accounts that break the rules.</p>' +
+      '<h2>Membership and payments</h2><p>Creating a channel is free and watching is always free. New channels get 7 days of creator access (going live, uploading, commenting and chatting) at no charge and without a card. After that, creator access is $7 per month, billed monthly through Stripe until you cancel. You can cancel any time from the Membership page and keep access through the period you paid for. The verified green checkmark is a separate subscription at $10 per month, billed monthly until you cancel; the checkmark comes off when that subscription ends. Payments are not refundable except where the law requires it. Verification can be removed from accounts that break the rules.</p>' +
       '<h2>Live streams</h2><p>Live video is sent directly from the broadcaster to each viewer and is not recorded by HSW365 Stream. Chat messages are stored and are public.</p>' +
       '<h2>Your videos</h2><p>You keep ownership of what you upload. By uploading you give HSW365 Media LLC a non-exclusive license to host, stream and display your video on the service. You can delete your videos at any time, which ends that license.</p>' +
       '<h2>Community rules</h2><ul><li>Only upload or broadcast video you made or have the rights to. The same rules apply to live streams and live chat.</li><li>No sexual content involving minors, and no content that sexualizes minors in any way.</li><li>No threats, harassment, doxxing or content that promotes violence against people.</li><li>No spam, scams, malware or impersonation.</li><li>No content that is illegal where you live or in the United States.</li></ul><p>Videos and channels that break these rules can be hidden or removed, and accounts can be closed. Live streams that break the rules can be ended at any time. Use the Report button on any video or live stream to flag it.</p>' +
