@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%230a0a0f%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%277%27 fill=%27%2322d3ee%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+<title>Studio - SYNC365</title>
+</head>
+<body>
+<header class="appbar"><div class="wrap">
+  <a class="logo" href="/"><i></i>SYNC<b>365</b></a>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="create" aria-selected="true">Create</button>
+    <button class="tab" role="tab" data-tab="library" aria-selected="false">Library</button>
+    <button class="tab" role="tab" data-tab="plan" aria-selected="false">Plan</button>
+  </nav>
+  <span class="spacer"></span>
+  <span class="pill usage" id="usagePill" hidden></span>
+  <button class="btn btn-ghost btn-sm" id="signout">Sign out</button>
+</div></header>
+
+<main class="main"><div class="wrap">
+  <div class="alert" id="banner" hidden></div>
+
+  <!-- CREATE -->
+  <section id="tab-create" style="padding:0">
+    <div id="paywall" hidden>
+      <div class="page-head"><div><h1 class="display">Choose your plan</h1><p>One flat price a month. A clear number of projects. No credits.</p></div></div>
+      <div class="plans" data-plans></div>
+      <p class="fine">Upgrade, downgrade or cancel anytime. Failed renders never count toward your monthly projects.</p>
+    </div>
+
+    <div id="studio" hidden>
+      <div class="page-head"><div><h1 class="display">New project</h1><p>Add a face and a voice. We sync the mouth to every word.</p></div></div>
+      <div class="studio">
+        <div class="card">
+          <div class="inputs">
+            <div class="drop" id="faceDrop">
+              <span class="mono step-n">01 / Face</span>
+              <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="9" r="4"/><path d="M4 21c1-4.5 4-6.5 8-6.5s7 2 8 6.5"/></svg></div>
+              <h3>Add the face</h3>
+              <p>Photo or video. Front-facing, whole face in frame, good light.</p>
+              <div class="actions"><button class="btn btn-ghost btn-sm" type="button" data-pick="face">Choose file</button></div>
+              <input type="file" id="faceInput" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm">
+            </div>
+            <div class="drop" id="audioDrop">
+              <span class="mono step-n">02 / Voice</span>
+              <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+              <h3>Add the voice</h3>
+              <p id="audioHint">MP3, WAV or M4A, or record it right here.</p>
+              <div class="actions"><button class="btn btn-ghost btn-sm" type="button" data-pick="audio">Choose file</button><button class="btn btn-ghost btn-sm" type="button" id="recBtn">Record</button></div>
+              <input type="file" id="audioInput" accept="audio/*,video/mp4,video/webm,.mp3,.wav,.m4a,.aac,.ogg">
+            </div>
+          </div>
+          <div class="field"><label for="title">Project name</label><input class="input" id="title" maxlength="80" placeholder="Single teaser, Spanish cut, ad hook B..."></div>
+          <label class="check"><input type="checkbox" id="rights"><span>I own or have permission to use this face and this voice, and I agree to the <a class="link" href="/terms" target="_blank" rel="noopener">acceptable use rules</a>.</span></label>
+          <div class="alert" id="createErr" hidden role="alert"></div>
+          <button class="btn btn-primary btn-block" id="generate">Generate lip sync</button>
+        </div>
+        <aside class="side">
+          <div class="card">
+            <span class="mono">This month</span>
+            <div class="meter-num" id="meterNum"></div>
+            <div class="mono" id="meterLabel"></div>
+            <div class="bar" id="meterBarWrap"><i id="meterBar"></i></div>
+            <div class="kv"><span>Plan</span><b id="kvPlan"></b></div>
+            <div class="kv"><span>Max length</span><b id="kvMax"></b></div>
+            <div class="kv"><span>Resets</span><b id="kvReset"></b></div>
+          </div>
+          <div class="card">
+            <h2>Best results</h2>
+            <div class="kv" style="border:0;padding-top:14px"><span>One face, looking at the camera, nothing covering the mouth.</span></div>
+            <div class="kv"><span>Clean audio with one voice. Music under a vocal is fine if the vocal is clear.</span></div>
+            <div class="kv"><span>Failed renders are never counted.</span></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section id="tab-library" style="padding:0" hidden>
+    <div class="page-head"><div><h1 class="display">Library</h1><p>Every take you have made. Download or delete anytime.</p></div><button class="btn btn-primary btn-sm" data-go="create">New project</button></div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden><h3>Nothing here yet</h3><p>Your finished takes show up here.</p><button class="btn btn-primary btn-sm" style="margin-top:22px" data-go="create">Make your first one</button></div>
+  </section>
+
+  <!-- PLAN -->
+  <section id="tab-plan" style="padding:0" hidden>
+    <div class="page-head"><div><h1 class="display">Plan and billing</h1><p id="planSummary"></p></div><button class="btn btn-ghost btn-sm" id="portalBtn" hidden>Manage billing</button></div>
+    <div class="plans" data-plans></div>
+    <p class="fine">Plan changes take effect right away and are prorated. Cancel anytime from Manage billing.</p>
+    <div class="card" style="max-width:520px;margin-top:44px">
+      <h2 style="margin-bottom:6px">Account</h2>
+      <p class="mono" id="acctEmail" style="margin-bottom:20px;text-transform:none;letter-spacing:.02em"></p>
+      <form id="pwForm">
+        <div class="field"><label for="pwCur">Current password</label><input class="input" id="pwCur" type="password" autocomplete="current-password" required></div>
+        <div class="field"><label for="pwNew">New password</label><input class="input" id="pwNew" type="password" autocomplete="new-password" minlength="8" required></div>
+        <button class="btn btn-ghost btn-sm" type="submit">Update password</button>
+      </form>
+    </div>
+  </section>
+</div></main>
+
+<div class="modal" id="modal" hidden><div class="modal-box">
+  <video id="player" controls playsinline></video>
+  <div class="modal-foot"><div><div id="playerTitle" style="font-weight:600"></div><div class="mono" id="playerMeta"></div></div>
+  <div style="display:flex;gap:10px"><a class="btn btn-primary btn-sm" id="playerDl">Download MP4</a><button class="btn btn-ghost btn-sm" id="playerClose">Close</button></div></div>
+</div></div>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
