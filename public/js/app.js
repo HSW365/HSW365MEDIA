@@ -106,6 +106,29 @@ $('#pwForm').addEventListener('submit', async (e) => {
   } catch (ex) { toast(ex.message, 'bad'); }
 });
 
+// ---- owner setup -------------------------------------------------------------
+function renderSetup(st) {
+  const on = (ok, yes, no) => `<span style="color:var(--${ok ? 'cyan' : 'yellow'})">${ok ? yes : no}</span>`;
+  $('#stEngine').innerHTML = on(st.engine, 'Connected', 'Needs fal.ai key');
+  $('#stBilling').innerHTML = on(st.billing, st.billingMode === 'live' ? 'Live' : 'Connected (test mode)', 'Needs Stripe key');
+  $('#stUsers').textContent = `${st.users} / ${st.subscribers}`;
+  $('#stRenders').textContent = `${st.renders} / $${st.engine_cost.toFixed(2)}`;
+}
+if (state.me.user.owner) {
+  $('#ownerCard').hidden = false;
+  api('/api/admin/setup').then((st) => { renderSetup(st); if (!st.engine || !st.billing) go('plan'); }).catch(() => {});
+  $('#setupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('#setupBtn');
+    btn.disabled = true; btn.textContent = 'Connecting...';
+    try {
+      renderSetup(await api('/api/admin/setup', { method: 'POST', body: { falKey: $('#falKey').value, stripeKey: $('#stripeKey').value } }));
+      e.target.reset(); toast('Saved and connected.', 'good');
+    } catch (ex) { toast(ex.message, 'bad'); }
+    btn.disabled = false; btn.textContent = 'Save and connect';
+  });
+}
+
 // ---- inputs ----------------------------------------------------------------
 function showCreateErr(msg) { const el = $('#createErr'); el.hidden = !msg; el.textContent = msg || ''; }
 

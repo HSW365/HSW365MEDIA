@@ -4,11 +4,12 @@
   "description": "SYNC365 - AI lip sync platform. Flat monthly subscriptions, per-tier project caps, no credits.",
   "type": "module",
   "private": true,
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js",
-    "stripe:setup": "node scripts/stripe-setup.js"
+    "dev": "node --watch server/index.js"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.17",

@@ -2,21 +2,13 @@ services:
   - type: web
     name: sync365
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
         generateValue: true
-      - { key: APP_URL, sync: false }
       - { key: OWNER_PASSWORD, sync: false }
-      - { key: FAL_KEY, sync: false }
-      - { key: STRIPE_SECRET_KEY, sync: false }
-      - { key: STRIPE_WEBHOOK_SECRET, sync: false }
-      - { key: STRIPE_PRICE_STARTER, sync: false }
-      - { key: STRIPE_PRICE_PRO, sync: false }
-      - { key: STRIPE_PRICE_ELITE, sync: false }
       - { key: DATABASE_URL, sync: false }
-      - { key: SUPABASE_URL, sync: false }
-      - { key: SUPABASE_SERVICE_KEY, sync: false }
+      - { key: DB_SCHEMA, sync: false }

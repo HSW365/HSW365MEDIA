@@ -9,9 +9,10 @@ export const ROOT = path.resolve(__dirname, '..');
 const env = process.env;
 export const IS_PROD = env.NODE_ENV === 'production';
 export const PORT = Number(env.PORT || 3000);
-export const APP_URL = (env.APP_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+export const APP_URL = (env.APP_URL || env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
 export const DATA_DIR = path.resolve(env.DATA_DIR || path.join(ROOT, 'data'));
-export const DATABASE_URL = env.DATABASE_URL || '';
+export const DATABASE_URL = env.DATABASE_URL || ''; // several candidates may be separated with |
+export const DB_SCHEMA = env.DB_SCHEMA || '';
 
 export const JWT_SECRET = env.JWT_SECRET || (IS_PROD ? '' : 'dev-only-secret-change-me');
 if (!JWT_SECRET) throw new Error('JWT_SECRET is required in production');
@@ -67,18 +68,7 @@ export const OWNER_EMAILS = (env.OWNER_EMAILS || 'hsw365media@gmail.com,hoodstar
 export const OWNER_PASSWORD = env.OWNER_PASSWORD || '';
 export const COMP_LIMITS = { projects: null, maxSeconds: 600 };
 
-// Stripe
-export const STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY || '';
-export const STRIPE_WEBHOOK_SECRET = env.STRIPE_WEBHOOK_SECRET || '';
-export const STRIPE_PRICES = {
-  starter: env.STRIPE_PRICE_STARTER || '',
-  pro: env.STRIPE_PRICE_PRO || '',
-  elite: env.STRIPE_PRICE_ELITE || '',
-};
-
-// Lip sync engine (fal.ai). One key, billed to the platform owner per render.
-export const FAL_KEY = env.FAL_KEY || '';
-export const ENGINE = env.LIPSYNC_ENGINE || (FAL_KEY ? 'fal' : 'none'); // fal | mock | none
+// Stripe and fal.ai keys are read through server/settings.js (env var or owner setup).
 export const FAL_MODEL_VIDEO = env.FAL_MODEL_VIDEO || 'fal-ai/latentsync';
 // Optional premium photo-to-performance model (e.g. "veed/fabric-1.0").
 // Leave empty to animate photos through the video model (far cheaper).

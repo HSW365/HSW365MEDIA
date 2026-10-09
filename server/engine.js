@@ -2,18 +2,25 @@
 // LIPSYNC_ENGINE=mock is a development stand-in that never runs in production.
 import fs from 'node:fs';
 import path from 'node:path';
-import { ENGINE, FAL_KEY, FAL_MODEL_VIDEO, FAL_MODEL_PHOTO, FAL_PHOTO_PLANS, FAL_PHOTO_RESOLUTION, IS_PROD } from './config.js';
+import { setting } from './settings.js';
+import { FAL_MODEL_VIDEO, FAL_MODEL_PHOTO, FAL_PHOTO_PLANS, FAL_PHOTO_RESOLUTION, IS_PROD } from './config.js';
 import { mockRender } from './media.js';
 
-let fal = null;
-if (ENGINE === 'fal') {
-  ({ fal } = await import('@fal-ai/client'));
-  fal.config({ credentials: FAL_KEY });
-}
-if (ENGINE === 'mock' && IS_PROD) throw new Error('LIPSYNC_ENGINE=mock is not allowed in production');
+const FORCED = process.env.LIPSYNC_ENGINE || '';
+if (FORCED === 'mock' && IS_PROD) throw new Error('LIPSYNC_ENGINE=mock is not allowed in production');
+const mode = () => FORCED || (setting('FAL_KEY') ? 'fal' : 'none'); // fal | mock | none
 
-export const engineReady = () => ENGINE === 'fal' || ENGINE === 'mock';
-export const engineName = () => ENGINE;
+let fal = null;
+let falKey = '';
+async function client() {
+  const key = setting('FAL_KEY');
+  if (!fal) ({ fal } = await import('@fal-ai/client'));
+  if (key !== falKey) { fal.config({ credentials: key }); falKey = key; }
+  return fal;
+}
+
+export const engineReady = () => mode() === 'fal' || mode() === 'mock';
+export const engineName = () => mode();
 
 // Photo sources go to the premium photo model only for plans that include it.
 export function pickModel(sourceKind, plan) {
@@ -23,7 +30,7 @@ export function pickModel(sourceKind, plan) {
 
 // What a render costs the platform, from the engines' published rates.
 export function estimateCost(model, seconds) {
-  if (ENGINE !== 'fal') return 0;
+  if (mode() !== 'fal') return 0;
   if (model.includes('fabric')) return +(seconds * (FAL_PHOTO_RESOLUTION === '720p' ? 0.15 : 0.08)).toFixed(3);
   if (model.includes('latentsync')) return +(0.2 + Math.max(0, seconds - 40) * 0.005).toFixed(3);
   return null;
@@ -31,16 +38,16 @@ export function estimateCost(model, seconds) {
 
 async function upload(file, type) {
   const blob = await fs.openAsBlob(file, { type });
-  return fal.storage.upload(new File([blob], path.basename(file), { type }));
+  return (await client()).storage.upload(new File([blob], path.basename(file), { type }));
 }
 
 // -> { requestId } for an async render, or { localResult } when already done.
 export async function submit({ model, input, visualPath, audioPath, seconds, outPath }) {
-  if (ENGINE === 'mock') {
+  if (mode() === 'mock') {
     await mockRender(visualPath, audioPath, outPath, seconds);
     return { localResult: outPath };
   }
-  if (ENGINE !== 'fal') throw new Error('Lip sync engine is not configured (set FAL_KEY).');
+  if (mode() !== 'fal') throw new Error('Lip sync engine is not configured (set FAL_KEY).');
   const [visualUrl, audioUrl] = await Promise.all([
     upload(visualPath, input === 'image' ? 'image/jpeg' : 'video/mp4'),
     upload(audioPath, 'audio/mpeg'),
@@ -48,13 +55,14 @@ export async function submit({ model, input, visualPath, audioPath, seconds, out
   const payload = input === 'image'
     ? { image_url: visualUrl, audio_url: audioUrl, resolution: FAL_PHOTO_RESOLUTION }
     : { video_url: visualUrl, audio_url: audioUrl, ...(model.includes('latentsync') ? { loop_mode: 'loop' } : {}) };
-  const { request_id: requestId } = await fal.queue.submit(model, { input: payload });
+  const { request_id: requestId } = await (await client()).queue.submit(model, { input: payload });
   return { requestId };
 }
 
 // -> { state: 'pending' } | { state: 'done', url } | { state: 'failed', error }
 export async function check(model, requestId) {
   try {
+    const fal = await client();
     const status = await fal.queue.status(model, { requestId, logs: false });
     if (status.status !== 'COMPLETED') return { state: 'pending' };
     const result = await fal.queue.result(model, { requestId });

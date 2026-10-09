@@ -9,27 +9,27 @@ projects per billing month. No credits.
 |---|---|
 | Plans, prices, monthly caps, max length | `server/config.js` |
 | Signup / login, owner accounts, monthly cap logic | `server/auth.js` |
-| Stripe subscriptions, plan switching, webhook | `server/billing.js` |
+| Stripe subscriptions, plan switching, webhook, auto setup | `server/billing.js` |
+| Owner-entered keys (encrypted) | `server/settings.js` |
 | Lip sync engine (fal.ai) | `server/engine.js` |
 | Render queue | `server/worker.js` |
 | Landing, pricing, studio, library | `public/` |
 
 ## Go live
 
-1. **Engine** - create a key at fal.ai and set `FAL_KEY`.
-2. **Stripe** - `STRIPE_SECRET_KEY=sk_live_... npm run stripe:setup` creates the
-   three monthly prices and prints the `STRIPE_PRICE_*` values. Add a webhook to
-   `<APP_URL>/api/stripe/webhook` and set `STRIPE_WEBHOOK_SECRET`. Turn on the
-   Customer Portal in Stripe billing settings.
-3. **Database and files** - set `DATABASE_URL` (Supabase Postgres connection
-   string) plus `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` so accounts and videos
-   survive restarts. Tables and the storage bucket are created on first boot.
-4. **Deploy** - push to GitHub and create a Render web service from the
-   `Dockerfile` (ffmpeg is included). `render.yaml` lists every env var.
-   Set `APP_URL`, `JWT_SECRET` and `OWNER_PASSWORD`.
+Deployed on Render from the `Dockerfile` (ffmpeg included). Host env vars:
+`JWT_SECRET`, `OWNER_PASSWORD`, `DATABASE_URL`, `DB_SCHEMA`.
+
+Everything else is done in the app: sign in with an owner email, open
+**Plan -> Platform setup**, paste the fal.ai key and the Stripe secret key.
+The app then creates the three monthly prices, the webhook and the billing
+portal by itself, and stores the keys encrypted in the database.
 
 Owner accounts (`OWNER_EMAILS`) are created at boot with `OWNER_PASSWORD`: full
 access, no cap, never billed. Those addresses cannot be registered publicly.
+
+Finished videos are stored in the database. To move them to Supabase Storage
+set `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`.
 
 ## Run locally
 

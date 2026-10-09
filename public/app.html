@@ -93,6 +93,20 @@
   <!-- PLAN -->
   <section id="tab-plan" style="padding:0" hidden>
     <div class="page-head"><div><h1 class="display">Plan and billing</h1><p id="planSummary"></p></div><button class="btn btn-ghost btn-sm" id="portalBtn" hidden>Manage billing</button></div>
+    <div class="card" id="ownerCard" hidden style="margin-bottom:34px;border-color:rgba(34,211,238,.45)">
+      <span class="mono" style="color:var(--cyan)">Owner only</span>
+      <h2 style="margin:8px 0 6px">Platform setup</h2>
+      <p style="color:var(--mute);font-size:14.5px;margin-bottom:8px">Paste each key once. Prices, the webhook and the billing portal are created for you.</p>
+      <div class="kv"><span>Lip sync engine</span><b id="stEngine"></b></div>
+      <div class="kv"><span>Subscriptions and checkout</span><b id="stBilling"></b></div>
+      <div class="kv"><span>Accounts / paying subscribers</span><b id="stUsers"></b></div>
+      <div class="kv" style="margin-bottom:18px"><span>Finished renders / engine spend</span><b id="stRenders"></b></div>
+      <form id="setupForm">
+        <div class="field"><label for="falKey">fal.ai API key</label><input class="input" id="falKey" type="password" autocomplete="off" placeholder="From fal.ai/dashboard/keys"></div>
+        <div class="field"><label for="stripeKey">Stripe secret key</label><input class="input" id="stripeKey" type="password" autocomplete="off" placeholder="sk_live_... from dashboard.stripe.com/apikeys"></div>
+        <button class="btn btn-primary btn-sm" type="submit" id="setupBtn">Save and connect</button>
+      </form>
+    </div>
     <div class="plans" data-plans></div>
     <p class="fine">Plan changes take effect right away and are prorated. Cancel anytime from Manage billing.</p>
     <div class="card" style="max-width:520px;margin-top:44px">

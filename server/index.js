@@ -12,7 +12,8 @@ import {
   loadUser, requireUser, rateLimit, setSession, clearSession, normEmail, validEmail,
   hashPassword, checkPassword, entitlement, usedThisPeriod, seedOwners,
 } from './auth.js';
-import { billingReady, subscribe, portal, handleWebhook, syncCustomer } from './billing.js';
+import { billingReady, billingMode, setupStripe, subscribe, portal, handleWebhook, syncCustomer } from './billing.js';
+import { loadSettings, setting, saveSetting } from './settings.js';
 import { startWorker } from './worker.js';
 import { engineReady, engineName } from './engine.js';
 
@@ -47,7 +48,7 @@ async function mePayload(user) {
   const ent = entitlement(user);
   const used = ent.active ? await usedThisPeriod(user.id, ent.periodStart) : 0;
   return {
-    user: { id: user.id, email: user.email, name: user.name, hasBilling: !!user.stripe_customer_id },
+    user: { id: user.id, email: user.email, name: user.name, hasBilling: !!user.stripe_customer_id, owner: !!user.comp },
     subscription: ent.active
       ? {
           active: true, comp: ent.comp, plan: ent.plan, planName: ent.planName,
@@ -98,6 +99,31 @@ app.post('/api/billing/portal', requireUser, wrap(async (req, res) => res.json(a
 app.post('/api/billing/sync', requireUser, wrap(async (req, res) => {
   await syncCustomer(req.user);
   res.json(await mePayload(await one('SELECT * FROM users WHERE id=$1', [req.user.id])));
+}));
+
+// ---- owner setup -------------------------------------------------------------
+// The owner pastes two keys in the app; nothing has to be set on the host.
+const requireOwner = (req, res, next) => (req.user?.comp ? next() : bad(res, 403, 'Owner access only.'));
+const setupStatus = async () => {
+  const [u] = await query(`SELECT count(*)::int AS users, count(*) FILTER (WHERE NOT comp AND status IN ('active','trialing'))::int AS subscribers FROM users`);
+  const [p] = await query(`SELECT count(*) FILTER (WHERE status='done')::int AS renders, coalesce(sum(cost_est) FILTER (WHERE status='done'),0)::float AS engine_cost FROM projects`);
+  return { engine: !!setting('FAL_KEY'), billing: billingReady(), billingMode: billingMode(), ...u, ...p };
+};
+app.get('/api/admin/setup', requireUser, requireOwner, wrap(async (_req, res) => res.json(await setupStatus())));
+app.post('/api/admin/setup', requireUser, requireOwner, wrap(async (req, res) => {
+  const falKey = String(req.body.falKey || '').trim();
+  const stripeKey = String(req.body.stripeKey || '').trim();
+  if (!falKey && !stripeKey) return bad(res, 400, 'Paste at least one key.');
+  if (falKey) {
+    if (falKey.length < 20 || /\s/.test(falKey)) return bad(res, 400, 'That does not look like a fal.ai key.');
+    await saveSetting('FAL_KEY', falKey);
+  }
+  if (stripeKey) {
+    if (!/^(sk|rk)_(live|test)_/.test(stripeKey)) return bad(res, 400, 'The Stripe key must be the secret key (starts with sk_live_).');
+    try { await setupStripe(stripeKey); }
+    catch (e) { return bad(res, 400, `Stripe did not accept that key: ${e.message}`); }
+  }
+  res.json(await setupStatus());
 }));
 
 // ---- projects --------------------------------------------------------------
@@ -252,6 +278,7 @@ app.use((err, _req, res, _next) => {
 });
 
 await migrate();
+await loadSettings();
 await initStorage();
 await seedOwners();
 await startWorker();
