@@ -345,3 +345,8 @@ input:focus, textarea:focus, select:focus { border-color: var(--cyan); }
 .lt.plain .btn { margin-top: 14px; align-self: flex-start; }
 a.lt:hover { border-color: var(--muted); }
 @media (max-width: 900px) { .launch { grid-template-columns: 1fr; } .bill { min-height: 0; } .bill-body { padding: 160px 22px 26px; } .bill::after { background: linear-gradient(0deg, rgba(10,10,15,.98) 0%, rgba(10,10,15,.85) 55%, rgba(10,10,15,.2) 100%); } }
+
+.paybig { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 100%; min-height: 64px; border-radius: 10px; border: 0; color: #fff; font: 700 17px/1.2 var(--body); margin-top: 10px; cursor: pointer; text-decoration: none; }
+.paybig small { font-size: 13px; font-weight: 500; opacity: .85; }
+.paybig.cash { background: #00C244; } .paybig.cash:hover { background: #00A83B; }
+.paybig.zelle { background: #6D1ED4; } .paybig.zelle:hover { background: #5A17B2; }

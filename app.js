@@ -833,14 +833,16 @@
       return j;
     } catch (e) { return { error: 'Connection problem. Try again.' }; }
   }
-  function payFallback(what, amount) {
-    var h = S.profile ? '@' + S.profile.handle : 'your handle';
+  function payFallback(what, amount, kind) {
     var n = (String(amount).match(/\d+(?:\.\d+)?/) || [''])[0];
-    modal('<h2>' + what + '</h2><p>Pay <b>' + amount + '</b> by Cash App or Zelle. Put <b>' + esc(h) + '</b> in the note so we switch on the right channel.</p>' +
-      '<p><b>Cash App:</b> $hsw365<br><b>Zelle:</b> 856-796-8081</p>' +
-      '<p class="stat">Your account is updated as soon as the payment is confirmed, usually the same day. Questions: ' + CONTACT + '</p>' +
-      '<div class="acts"><button class="btn" id="pfOk">Paid by Zelle</button><a class="btn primary" target="_blank" rel="noopener" href="https://cash.app/$hsw365' + (n ? '/' + n : '') + '">Pay with Cash App</a></div>');
-    document.getElementById('pfOk').onclick = closeModal;
+    modal('<h2>' + what + '</h2><p>$' + n + ' for the month. Tap one.</p>' +
+      '<a class="paybig cash" id="pfCash" target="_blank" rel="noopener" href="https://cash.app/$hsw365' + (n ? '/' + n : '') + '">Pay $' + n + ' with Cash App<small>$hsw365</small></a>' +
+      '<button class="paybig zelle" id="pfZelle" type="button">Pay $' + n + ' with Zelle<small id="pfZn">856-796-8081 / tap to copy the number</small></button>' +
+      '<p class="stat" style="text-align:center">Your account stays on while we confirm, usually the same day.</p>');
+    var claimed = false;
+    function claim(method) { if (claimed || !kind) return; claimed = true; sb.rpc('stream_pay_claim', { p_kind: kind, p_method: method }).then(function () { loadAccess && loadAccess(); }); }
+    document.getElementById('pfCash').onclick = function () { claim('cashapp'); setTimeout(function () { closeModal(); toast('Thanks! Your account stays on while we confirm.'); }, 400); };
+    document.getElementById('pfZelle').onclick = function () { try { navigator.clipboard.writeText('8567968081'); } catch (e) {} document.getElementById('pfZn').textContent = 'Number copied. Send $' + n + ' in your bank\'s Zelle.'; claim('zelle'); };
   }
   async function vMembership(sub) {
     if (needAuth()) return;
@@ -881,23 +883,14 @@
       '<section class="plan v"><span class="feature-tag">Verified</span><div class="price"><b>$10</b><span>per month</span></div>' + vState +
       '<ul><li>Green checkmark next to your name' + VCHECK + '</li><li>Shows on your channel, videos, streams and chat</li><li>Stays on while you subscribe. Cancel any time</li></ul>' +
       (a.verified ? (a.has_billing && !a.owner ? '<button class="btn" id="vManage">Manage or cancel</button>' : '') : '<button class="btn verify" id="vBuy">Get verified</button>') + '</section></div>' +
-      '<p class="hint stat" style="margin-top:22px">Payments are handled by Stripe. Billing questions: <a class="link" href="mailto:' + CONTACT + '">' + CONTACT + '</a></p>';
+      '<p class="hint stat" style="margin-top:22px">Pay by Cash App or Zelle. Billing questions: <a class="link" href="mailto:' + CONTACT + '">' + CONTACT + '</a></p>';
     function wire(id, body, label, amount) {
       var b = document.getElementById(id);
       if (!b) return;
-      b.onclick = async function () {
-        b.disabled = true;
-        var j = await billing(body);
-        b.disabled = false;
-        if (!j || j.url) return;
-        if (j.error === 'not_configured') return payFallback(label, amount);
-        toast(j.error || 'Could not open checkout');
-      };
+      b.onclick = function () { payFallback(label, amount, body.kind); };
     }
     wire('mJoin', { a: 'checkout', kind: 'member' }, 'Start membership', '$7 for the month');
     wire('vBuy', { a: 'checkout', kind: 'verify' }, 'Get verified', '$10 for the month');
-    wire('vManage', { a: 'portal' }, 'Manage verification', '');
-    wire('mManage', { a: 'portal' }, 'Manage membership', '');
   }
 
   /* ---------- live ---------- */
