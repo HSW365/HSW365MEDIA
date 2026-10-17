@@ -115,6 +115,10 @@ footer{background:var(--navy);color:#9FB0C7;padding:40px 0;font-size:14px}
 footer a{color:#fff}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .burger{display:none;background:none;border:0;color:var(--navy);cursor:pointer}
+.paybig{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:66px;border-radius:16px;border:0;color:#fff;font-weight:700;font-size:17px;cursor:pointer;text-decoration:none;font-family:var(--body)}
+.paybig small{font-size:13px;font-weight:500;opacity:.88}
+.paybig.cash{background:#00C244}.paybig.cash:hover{background:#00A83B}
+.paybig.zelle{background:#6D1ED4}.paybig.zelle:hover{background:#5A17B2}
 #navR{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
 /* home */
 .hx{padding:28px 0 0}
@@ -479,11 +483,10 @@ V.membership = async function () {
   return head + payBox(price, false) + "</div></div>";
 };
 function payBox(price, renew) {
-  var nm = esc(S.me.full_name || "your name");
-  return '<div class="card stack" style="margin-top:18px"><h3 class="h">' + (renew ? "Renew" : "1. Pay $" + price) + '</h3>' +
-    '<a class="card" style="padding:16px;color:inherit" href="https://cash.app/' + CASHTAG + "/" + price + '" target="_blank" rel="noopener"><b style="color:var(--wh)">Cash App</b><div class="small muted">' + CASHTAG + " &middot; put " + nm + " in the note</div></a>" +
-    '<div class="card" style="padding:16px"><b style="color:var(--wh)">Zelle</b><div class="small muted">' + ZELLE + " &middot; put " + nm + ' in the memo</div></div>' +
-    '<h3 class="h" style="margin-top:8px">2. Tell us you paid</h3><form class="stack" id="payF"><select class="in" id="payM"><option value="cashapp">I paid with Cash App</option><option value="zelle">I paid with Zelle</option></select><input class="in" id="payR" maxlength="120" placeholder="Your $cashtag or the name on your Zelle"><div class="err" id="payErr"></div><button class="btn gold" id="payB">I\'ve paid — activate</button><p class="small muted">You get full access right away while we confirm, usually the same day.</p></form></div>';
+  return '<div class="stack" style="margin-top:18px">' +
+    '<a class="paybig cash" data-pay="cashapp" href="https://cash.app/' + CASHTAG + "/" + price + '" target="_blank" rel="noopener">' + (renew ? "Renew" : "Pay") + ' $' + price + ' with Cash App<small>' + CASHTAG + '</small></a>' +
+    '<button type="button" class="paybig zelle" data-pay="zelle">' + (renew ? "Renew" : "Pay") + ' $' + price + ' with Zelle<small id="zelleNote">' + ZELLE + ' &middot; tap to copy the number</small></button>' +
+    '<p class="small muted" style="text-align:center">You get full access right away while we confirm, usually the same day.</p></div>';
 }
 
 V.profile = async function () {
@@ -549,6 +552,13 @@ function agreementBody(t) {
 
 /* ---------- actions ---------- */
 document.addEventListener("click", async function (e) {
+  var pb = e.target.closest("[data-pay]");
+  if (pb && S.me) {
+    var method = pb.getAttribute("data-pay");
+    if (method === "zelle") { try { navigator.clipboard.writeText(ZELLE.replace(/\D/g, "")); } catch (x) {} var zn = $("zelleNote"); if (zn) zn.textContent = "Number copied. Send it in your bank's Zelle."; }
+    if (!S.payClaimed) { S.payClaimed = true; sb.rpc("nil_pay_claim", { p_method: method, p_ref: S.me.full_name || S.me.id }).then(async function () { await loadMe(); }); }
+    if (method === "cashapp") setTimeout(function () { toast("Thanks! You're active while we confirm."); go("#/app"); }, 500);
+  }
   var t = e.target.closest("[data-role],[data-acc],[data-rej],[data-agr],[data-copy],[data-close-deal],[data-open-deal],#next,#back,#forgot,#printB,#voidB,#burger");
   if (!t) { if (!e.target.closest("#links")) $("links").classList.remove("open"); return; }
   if (t.id === "burger") { $("links").classList.toggle("open"); return; }
@@ -662,15 +672,6 @@ document.addEventListener("submit", async function (e) {
     busy($("postB"), false, "Publish deal");
     if (rp.error) { $("postErr").textContent = /row-level/.test(rp.error.message) ? "Activate your brand membership to post deals." : rp.error.message; return; }
     toast("Deal published."); go("#/deal/" + rp.data.id); return;
-  }
-  if (f.id === "payF") {
-    var ref = $("payR").value.trim(); $("payErr").textContent = "";
-    if (ref.length < 2) { $("payErr").textContent = "Add your $cashtag or Zelle name so we can match your payment."; return; }
-    busy($("payB"), true, "I've paid — activate");
-    var rc = await sb.rpc("nil_pay_claim", { p_method: $("payM").value, p_ref: ref });
-    busy($("payB"), false, "I've paid — activate");
-    if (rc.error) { $("payErr").textContent = rc.error.message; return; }
-    await loadMe(); toast("Thanks! You're active while we confirm."); go("#/app"); return;
   }
   if (f.id === "profF") {
     var pr = readForm(f); ["grad_year", "followers"].forEach(function (k) { if (k in pr) pr[k] = pr[k] === "" ? null : +pr[k]; });
