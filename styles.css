@@ -321,3 +321,27 @@ input:focus, textarea:focus, select:focus { border-color: var(--cyan); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* visitor billboard */
+.bill { position: relative; border-radius: 10px; overflow: hidden; min-height: 520px; display: flex; align-items: flex-end; margin-bottom: 26px; background: #000; isolation: isolate; }
+.bill-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 40%; z-index: -2; }
+.bill::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(10,10,15,.96) 0%, rgba(10,10,15,.82) 38%, rgba(10,10,15,.15) 75%), linear-gradient(0deg, rgba(10,10,15,.9) 0%, rgba(10,10,15,0) 45%); }
+.bill-body { padding: 48px 48px 44px; max-width: 640px; }
+.bill-live { display: inline-flex; align-items: center; gap: 10px; font: 700 13px/1 var(--body); color: #fecaca; }
+.bill-h { font: italic 800 clamp(56px, 7.2vw, 112px)/.86 var(--display); text-transform: uppercase; letter-spacing: -.01em; margin: 18px 0 0; }
+.bill-p { color: #c9c9d8; font-size: 17px; line-height: 1.6; margin: 22px 0 0; max-width: 520px; }
+.bill .acts { margin-top: 28px; display: flex; gap: 10px; flex-wrap: wrap; }
+.btn.lg { height: 48px; padding: 0 24px; font-size: 15px; }
+.btn.ghost { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.22); }
+.bill-note { color: var(--dim); font-size: 13px; margin: 18px 0 0; }
+.launch { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.lt { position: relative; border-radius: 10px; overflow: hidden; background: var(--panel); border: 1px solid var(--line); display: flex; flex-direction: column; }
+.lt img { aspect-ratio: 16/10; width: 100%; object-fit: cover; }
+.lt > div, .lt.plain { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 6px; }
+.lt b { font: 700 24px/1 var(--display); text-transform: uppercase; color: var(--text); }
+.lt span { color: var(--muted); font-size: 14px; }
+.lt.plain { justify-content: flex-end; background: linear-gradient(160deg, #13212a 0%, var(--panel) 60%); border-color: #1f3a44; }
+.lt.plain b { font-size: 34px; }
+.lt.plain .btn { margin-top: 14px; align-self: flex-start; }
+a.lt:hover { border-color: var(--muted); }
+@media (max-width: 900px) { .launch { grid-template-columns: 1fr; } .bill { min-height: 0; } .bill-body { padding: 160px 22px 26px; } .bill::after { background: linear-gradient(0deg, rgba(10,10,15,.98) 0%, rgba(10,10,15,.85) 55%, rgba(10,10,15,.2) 100%); } }

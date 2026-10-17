@@ -223,15 +223,32 @@
   }
 
   var uploadCta = '<a class="btn primary" href="#/upload">Upload a video</a>';
+  function billboard() {
+    return '<section class="bill"><img class="bill-img" src="img/live.jpg" alt="A streamer live at his desk with headphones on" fetchpriority="high">' +
+      '<div class="bill-body"><span class="bill-live"><i class="pulse"></i>Live streaming and video</span>' +
+      '<h1 class="bill-h">Go live.<br>Keep your audience.</h1>' +
+      '<p class="bill-p">HSW365 Stream is an independent home for streamers, artists and podcasters. Go live from your camera or screen, upload videos and talk with your viewers in chat. Watching is always free.</p>' +
+      '<div class="acts"><a class="btn primary lg" href="#/signup">Create your channel</a><a class="btn lg ghost" href="#/live">See who\'s live</a></div>' +
+      '<p class="bill-note">First 7 days free. Then $7 a month to keep streaming. No card needed to start.</p></div></section>';
+  }
+  function launchRow() {
+    return '<section class="launch">' +
+      '<a class="lt" href="#/signup"><img src="img/setup.jpg" alt="A gaming setup lit in red and blue" loading="lazy"><div><b>Gaming</b><span>Stream your screen with game audio and chat beside it.</span></div></a>' +
+      '<a class="lt" href="#/signup"><img src="img/mic.jpg" alt="A studio microphone in a recording booth" loading="lazy"><div><b>Music and podcasts</b><span>Premiere a song, run a live session or record an episode.</span></div></a>' +
+      '<div class="lt plain"><b>Be first on the home page</b><span>HSW365 Stream just opened. The first channels to go live are the ones every new viewer sees.</span><a class="btn primary" href="#/signup">Claim your channel name</a></div>' +
+      '</section>';
+  }
+
 
   async function vHome() {
     document.title = 'HSW365 Stream';
     var token = routeToken, lives = await fetchLives(4);
     if (token !== routeToken) return;
     var strip = lives.length ? '<section class="live-strip"><div class="page-head"><h2><i class="pulse"></i>Live now</h2><a class="btn sm" href="#/live">All live streams</a></div><div class="grid">' + lives.map(liveCard).join('') + '</div></section>' : '';
+    var hero = S.user ? '' : billboard();
     return feed({
-      head: chips('home') + strip, feature: true,
-      empty: emptyBlock('Nothing on air yet', 'This is a new platform. Go live or post the first video and you lead the home page.', '<div class="acts center"><a class="btn golive" href="#/golive">' + icon('live', 16) + 'Go live</a>' + uploadCta + '</div>'),
+      head: hero + chips('home') + strip, feature: true,
+      empty: S.user ? emptyBlock('Your channel can be the first thing people see', 'Nobody has posted yet. Go live or upload now and you lead the home page.', '<div class="acts center"><a class="btn golive" href="#/golive">' + icon('live', 16) + 'Go live</a>' + uploadCta + '</div>') : launchRow(),
       build: function (a, b) { return sb.from('stream_videos').select(VIDEO_SEL).eq('is_hidden', false).order('created_at', { ascending: false }).range(a, b); }
     });
   }
