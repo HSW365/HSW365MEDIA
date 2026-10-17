@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSW365 Payments — confirm member payments</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+body{overflow:auto}
+.pay-wrap{max-width:1040px;margin:0 auto;padding:32px 20px 80px}
+.pay-top{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.pay-top .sp{flex:1}
+.prow{display:grid;grid-template-columns:120px 1fr 110px 120px auto;gap:14px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--b1)}
+.prow:last-child{border-bottom:0}
+.prow .who b{display:block;color:var(--wh)}
+.prow .who span{font-size:12px;color:var(--md)}
+.amt{font-family:var(--head);font-size:22px;font-weight:800;color:var(--wh)}
+@media (max-width:820px){.prow{grid-template-columns:1fr 1fr}.prow .acts{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="pay-wrap">
+  <div class="pay-top">
+    <div class="mark">HSW</div>
+    <div><div class="eyebrow">HSW365 Media</div><div class="h2">Member payments</div></div>
+    <div class="sp"></div>
+    <a class="btn sm" href="./">Promo Engine</a>
+    <button class="btn sm" id="refresh">Refresh</button>
+  </div>
+  <div id="lock" class="card stack" style="display:none;max-width:460px">
+    <div class="h3">Owner access</div>
+    <label class="f">Access code<input class="in" id="code" type="password" placeholder="hsw-..."></label>
+    <button class="btn pri" id="unlock">Unlock</button>
+  </div>
+  <div id="main" style="display:none">
+    <div class="grid g4" id="stats"></div>
+    <p class="muted" style="margin:18px 0 10px">Members who report a payment get 3 days of access. Check your Shopify order email, Cash App or Zelle, then confirm or reject. Confirming adds 30 days.</p>
+    <div class="row" style="margin:20px 0 10px"><div class="h3" style="margin-right:auto">Waiting for you</div></div>
+    <div class="card pad0" id="pending"></div>
+    <div class="row" style="margin:28px 0 10px"><div class="h3">History</div></div>
+    <div class="card pad0" id="history"></div>
+  </div>
+</div>
+<div class="toasts"></div>
+<script>
+(function () {
+  "use strict";
+  var SOURCES = [
+    { url: "https://lsxdlmrjrcivxwgfkpop.supabase.co/functions/v1/hsw-pay-admin" },
+    { url: "https://ucgymjcenpddqshokybj.supabase.co/functions/v1/hsw-pay-admin" }
+  ];
+  var APPS = { speekzone: "SpeekZone", yogo: "CaptureItLive", hsw365stream: "HSW365 Stream" };
+  var METHOD = { card: "Card", cashapp: "Cash App", zelle: "Zelle" };
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var when = function (d) { return d ? new Date(d).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : ""; };
+  function toast(m, bad) { var t = document.createElement("div"); t.className = "toast" + (bad ? " err" : ""); t.textContent = m; document.querySelector(".toasts").appendChild(t); setTimeout(function () { t.remove(); }, 3500); }
+  function getCode() {
+    try { var s = JSON.parse(localStorage.getItem("hsw365.promo.v1") || "{}"); if (s.settings && s.settings.cloudKey) return s.settings.cloudKey; } catch (e) {}
+    try { return localStorage.getItem("hsw365.pay.code") || ""; } catch (e) { return ""; }
+  }
+  var CODE = getCode();
+  var unlockHash = location.hash.match(/^#key=([^&]+)/);
+  if (unlockHash) { CODE = decodeURIComponent(unlockHash[1]); try { localStorage.setItem("hsw365.pay.code", CODE); } catch (e) {} history.replaceState(null, "", location.pathname); }
+
+  function call(src, body) {
+    return fetch(src.url, { method: "POST", headers: { "Content-Type": "application/json", "x-promo-key": CODE }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) { var e = new Error(j.error || "Error " + r.status); e.status = r.status; throw e; } return j; }); });
+  }
+  var rows = [];
+  function load() {
+    return Promise.all(SOURCES.map(function (s) {
+      return call(s, { a: "list" }).then(function (j) { return (j.payments || []).map(function (p) { p._src = s; return p; }); });
+    })).then(function (lists) {
+      rows = [].concat.apply([], lists).sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+      $("lock").style.display = "none"; $("main").style.display = "block"; paint();
+    }).catch(function (e) {
+      if (e.status === 401) { $("main").style.display = "none"; $("lock").style.display = "flex"; if (CODE) toast("Access code rejected", true); }
+      else toast(e.message, true);
+    });
+  }
+  function row(p, actions) {
+    return '<div class="prow"><div><span class="tag ' + (p.app === "yogo" ? "cy" : "vi") + '">' + esc(APPS[p.app] || p.app) + '</span></div>' +
+      '<div class="who"><b>' + esc(p.handle || p.email || p.account_ref) + '</b><span>' + esc(p.email || "") + ' · ' + esc(METHOD[p.method] || p.method) + ' · ' + esc(p.reference || "") + ' · ' + esc(when(p.created_at)) + '</span></div>' +
+      '<div class="amt">$' + (p.amount_cents / 100).toFixed(2) + '</div>' +
+      '<div><span class="tag ' + (p.status === "approved" ? "gn" : p.status === "rejected" ? "rd" : "yl") + '">' + esc(p.status) + '</span></div>' +
+      '<div class="row acts" style="justify-content:flex-end">' + (actions ? '<button class="btn sm pri" data-ok="' + p.id + '">Confirm</button><button class="btn sm danger" data-no="' + p.id + '">Reject</button>' : '<span class="muted" style="font-size:12px">' + esc(when(p.decided_at)) + '</span>') + '</div></div>';
+  }
+  function paint() {
+    var pend = rows.filter(function (p) { return p.status === "pending"; });
+    var done = rows.filter(function (p) { return p.status !== "pending"; });
+    var now = new Date(), month = rows.filter(function (p) { var d = new Date(p.created_at); return p.status === "approved" && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
+    var sum = function (l) { return "$" + (l.reduce(function (s, p) { return s + p.amount_cents; }, 0) / 100).toFixed(2); };
+    $("stats").innerHTML = [[pend.length, "Waiting to confirm"], [sum(pend), "Pending amount"], [month.length, "Confirmed this month"], [sum(month), "Confirmed revenue this month"]]
+      .map(function (s) { return '<div class="card stat"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join("");
+    $("pending").innerHTML = pend.length ? pend.map(function (p) { return row(p, true); }).join("") : '<div class="empty"><b>All caught up</b><p>New member payments show up here.</p></div>';
+    $("history").innerHTML = done.length ? done.slice(0, 100).map(function (p) { return row(p, false); }).join("") : '<div class="empty"><p>No confirmed payments yet.</p></div>';
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ok],[data-no]");
+    if (!b) return;
+    var id = b.dataset.ok || b.dataset.no, approve = !!b.dataset.ok;
+    var p = rows.filter(function (x) { return x.id === id; })[0];
+    if (!p) return;
+    b.disabled = true;
+    call(p._src, { a: "decide", id: id, approve: approve }).then(function () { toast(approve ? "Confirmed — 30 days added" : "Rejected"); return load(); })
+      .catch(function (err) { b.disabled = false; toast(err.message, true); });
+  });
+  $("unlock").addEventListener("click", function () { CODE = $("code").value.trim(); try { localStorage.setItem("hsw365.pay.code", CODE); } catch (e) {} load(); });
+  $("refresh").addEventListener("click", load);
+  setInterval(load, 60000);
+  load();
+})();
+</script>
+</body>
+</html>

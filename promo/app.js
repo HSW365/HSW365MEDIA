@@ -408,7 +408,7 @@ function shell() {
       <div class="brand"><div class="mark">HSW</div><div><b>Promo Engine</b><small>HSW365 MEDIA</small></div></div>
       <div class="prod-switch"><select id="prodSel" aria-label="Active app"></select></div>
       <nav class="nav" id="nav"></nav>
-      <div class="side-foot">Built by HSW365 Media<br><a href="mailto:hsw365media@gmail.com">hsw365media@gmail.com</a></div>
+      <div class="side-foot"><a href="payments.html" style="color:var(--cy);font-weight:600">Member payments &rarr;</a><br><br>Built by HSW365 Media<br><a href="mailto:hsw365media@gmail.com">hsw365media@gmail.com</a></div>
     </aside>
     <div class="main">
       <header class="top">
