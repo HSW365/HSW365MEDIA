@@ -89,10 +89,12 @@ const TONES = ["Real & direct", "Hype", "Motivational", "Educational", "Funny", 
 
 /* ---------- state ---------- */
 const KEY = "hsw365.promo.v1";
+const CLOUD_URL = "https://ucgymjcenpddqshokybj.supabase.co/functions/v1/promo-ai";
 const defaults = () => ({
   v: 1,
   settings: {
-    provider: "gemini", geminiKey: "", geminiModel: "gemini-flash-latest",
+    provider: "cloud", cloudUrl: CLOUD_URL, cloudKey: "",
+    geminiKey: "", geminiModel: "gemini-flash-latest",
     groqKey: "", groqModel: "llama-3.3-70b-versatile",
     allowEmoji: false, autoUtm: true, rateDelay: 6500,
     cloneUrl: "https://clone-agent.onrender.com", cloneToken: "", cloneSync: false
@@ -106,6 +108,15 @@ function load() {
   try { state = Object.assign(defaults(), JSON.parse(localStorage.getItem(KEY) || "{}")); }
   catch { state = defaults(); }
   state.settings = Object.assign(defaults().settings, state.settings || {});
+  if (!state.settings.cloudUrl) state.settings.cloudUrl = CLOUD_URL;
+  if (state.settings.provider === "gemini" && !state.settings.geminiKey) state.settings.provider = "cloud";
+  const unlock = location.hash.match(/^#key=([^&]+)/);
+  if (unlock) {
+    state.settings.cloudKey = decodeURIComponent(unlock[1]);
+    state.settings.provider = "cloud";
+    history.replaceState(null, "", location.pathname + location.search + "#/home");
+    ui.unlocked = true;
+  }
   const have = new Set(state.products.map((p) => p.slug));
   for (const a of window.HSW365_APPS || []) {
     if (!have.has(a.slug)) state.products.push(Object.assign({ id: uid(), brief: {}, createdAt: new Date().toISOString() }, a));
@@ -227,10 +238,14 @@ function parseJSON(text) {
   const end = t.lastIndexOf(close);
   return JSON.parse(t.slice(start, end + 1));
 }
-function hasKey() { const s = state.settings; return s.provider === "groq" ? !!s.groqKey : !!s.geminiKey; }
-async function ai({ prompt, web = false, temperature = 0.9 }) {
-  if (!hasKey()) { location.hash = "#/settings"; throw new Error("Add your free AI key in Settings first."); }
+function hasKey() { const s = state.settings; return s.provider === "cloud" ? !!s.cloudKey : s.provider === "groq" ? !!s.groqKey : !!s.geminiKey; }
+const providerName = () => ({ cloud: "HSW365 AI", groq: "Groq", gemini: "Gemini" }[state.settings.provider] || "AI");
+const isCloud = () => state.settings.provider === "cloud";
+const httpUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : null);
+async function ai({ prompt, web = false, temperature = 0.9, urls = [] }) {
+  if (!hasKey()) { location.hash = "#/settings"; throw new Error(state.settings.provider === "cloud" ? "Enter your HSW365 access code in Settings first." : "Add your free AI key in Settings first."); }
   const s = state.settings;
+  if (s.provider === "cloud") return cloudCall(prompt, web, temperature, urls.filter(Boolean));
   if (s.provider === "groq") return groqCall(prompt, temperature);
   return geminiCall(prompt, web, temperature);
 }
@@ -268,6 +283,21 @@ async function geminiCall(prompt, web, temperature) {
     }
   }
   throw lastErr || new Error("No Gemini model available");
+}
+async function cloudCall(prompt, web, temperature, urls) {
+  const s = state.settings;
+  let res, data;
+  try {
+    res = await fetch(s.cloudUrl || CLOUD_URL, { method: "POST", headers: { "Content-Type": "application/json", "x-promo-key": s.cloudKey },
+      body: JSON.stringify({ system: systemPrompt(), prompt, web, temperature, urls, json: true }) });
+    data = await res.json().catch(() => ({}));
+  } catch { throw new Error("Could not reach the HSW365 AI server. Check your connection."); }
+  if (res.status === 401) throw new Error("Access code rejected. Re-enter it in Settings.");
+  if (res.status === 429) { const e = new Error(data.error || "AI is rate limited. Give it a minute."); e.rate = true; throw e; }
+  if (!res.ok) throw new Error(data.error || "AI error " + res.status);
+  let json;
+  try { json = parseJSON(data.text); } catch { throw new Error("AI returned malformed JSON — try again."); }
+  return { data: json, sources: arr(data.sources), web: !!data.web };
 }
 async function groqCall(prompt, temperature) {
   const s = state.settings;
@@ -416,7 +446,7 @@ function updateTop() {
   const mem = $("#pMem");
   if (mem) mem.innerHTML = `<span class="dot ${state.settings.cloneSync ? (unsynced ? "warn" : "ok") : ""}"></span>Memory ${num(state.log.length)}`;
   const pai = $("#pAi");
-  if (pai) pai.innerHTML = `<span class="dot ${hasKey() ? "ok" : "warn"}"></span>${hasKey() ? (state.settings.provider === "groq" ? "Groq" : "Gemini") : "Add AI key"}`;
+  if (pai) pai.innerHTML = `<span class="dot ${hasKey() ? "ok" : "warn"}"></span>${hasKey() ? providerName() : "Add access code"}`;
 }
 function softRender() { if (["autopilot", "home", "posts", "calendar", "dashboard"].includes(routeName()) && !document.activeElement?.matches("input,textarea,select")) render(); else updateTop(); }
 function render() {
@@ -785,7 +815,7 @@ VIEWS.autopilot = () => {
     ${total ? `<div class="prog" style="margin-top:14px"><i style="width:${Math.round((100 * doneN) / total)}%"></i></div>` : ""}
   </div>
   ${total ? `<div class="card pad0 list" style="margin-top:16px">${a.jobs.map((j) => `<div class="li"><div class="grow"><div class="t">${esc(prod(j.productId)?.name || "?")}</div><div class="s">${j.n} posts${j.error ? " · " + esc(j.error) : ""}</div></div><span class="tag ${j.done ? (j.error ? "rd" : "gn") : a.running && a.cursor === j.id ? "vi" : ""}">${j.done ? (j.error ? "failed" : "done") : a.running && a.cursor === j.id ? "writing" : "queued"}</span></div>`).join("")}</div>` : ""}
-  ${!hasKey() ? `<p class="muted" style="margin-top:12px">Add your free Gemini key in <a href="#/settings">Settings</a> to run.</p>` : ""}`;
+  ${!hasKey() ? `<p class="muted" style="margin-top:12px">Enter your HSW365 access code in <a href="#/settings">Settings</a> to run.</p>` : ""}`;
 };
 
 VIEWS.dashboard = () => {
@@ -910,11 +940,12 @@ VIEWS.memory = () => {
 
 VIEWS.settings = () => {
   const s = state.settings;
-  return head("System", "Settings", "Free AI by default: a Google Gemini key from aistudio.google.com/apikey costs nothing. Keys stay in this browser only.") + `
+  return head("System", "Settings", "HSW365 AI runs on your Gemini and Groq keys, held on the server — nothing secret lives in this page.") + `
   <div class="grid g2">
     <div class="card stack">
       <div class="h3">AI provider</div>
-      <label class="f">Provider<select class="in" id="sProv"><option value="gemini" ${s.provider === "gemini" ? "selected" : ""}>Google Gemini (free, live web research)</option><option value="groq" ${s.provider === "groq" ? "selected" : ""}>Groq (free, fastest)</option></select></label>
+      <label class="f">Provider<select class="in" id="sProv"><option value="cloud" ${s.provider === "cloud" ? "selected" : ""}>HSW365 AI (Gemini + Groq, built in)</option><option value="gemini" ${s.provider === "gemini" ? "selected" : ""}>Google Gemini (own key in this browser)</option><option value="groq" ${s.provider === "groq" ? "selected" : ""}>Groq (own key in this browser)</option></select></label>
+      <label class="f">HSW365 access code<input class="in" id="sCloud" type="password" value="${esc(s.cloudKey)}" placeholder="hsw-..."></label>
       <label class="f">Gemini API key<input class="in" id="sGem" type="password" value="${esc(s.geminiKey)}" placeholder="AIza..."></label>
       <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-size:12.5px">Get a free Gemini key ${ic("ext")}</a>
       <label class="f">Gemini model<input class="in" id="sGemM" value="${esc(s.geminiModel)}"></label>
@@ -977,7 +1008,7 @@ A.delProductYes = () => {
 A.closeModal = closeModal;
 
 async function researchBrief(p, overwrite) {
-  const r = await ai({ web: /^https?:/i.test(p.url || ""), temperature: 0.4, prompt: `Research this product and write a sharp marketing brief.
+  const r = await ai({ web: !isCloud() && !!httpUrl(p.url), urls: [httpUrl(p.url)], temperature: 0.4, prompt: `Research this product and write a sharp marketing brief.
 ${productContext(p)}
 ${/^https?:/i.test(p.url || "") ? `Read the live page at ${p.url} and anything public about it.` : ""}
 Return JSON:
@@ -1004,7 +1035,7 @@ A.genAudience = () => busy("aud", async () => {
 A.genCompetitors = () => busy("comp", async () => {
   const p = prod();
   const names = $("#compNames")?.value.trim() || "";
-  const r = await ai({ web: true, temperature: 0.4, prompt: `Research the real competitors of this product${names ? " including: " + names : ""}.\n${productContext(p)}\nFind 4-6 real alternatives people use today. Return JSON: {"summary":"2-3 sentences: how to win","gaps":["market gaps to own"],"competitors":[{"name":"","url":"","positioning":"how they sell themselves","pricing":"if known","strengths":["2-3"],"weaknesses":["2-3"],"our_angle":"the specific message that beats them"}]}` });
+  const r = await ai({ web: true, urls: [httpUrl(p.url)], temperature: 0.4, prompt: `Research the real competitors of this product${names ? " including: " + names : ""}.\n${productContext(p)}\nFind 4-6 real alternatives people use today. Return JSON: {"summary":"2-3 sentences: how to win","gaps":["market gaps to own"],"competitors":[{"name":"","url":"","positioning":"how they sell themselves","pricing":"if known","strengths":["2-3"],"weaknesses":["2-3"],"our_angle":"the specific message that beats them"}]}` });
   p.competitors = Object.assign({ names, sources: r.sources, at: new Date().toISOString() }, r.data);
   save(); remember("competitors", `Competitor research: ${p.name}`, p.id, p.id);
 });
@@ -1013,11 +1044,11 @@ A.genAudit = () => busy("audit", async () => {
   const p = prod();
   const url = $("#auditUrl").value.trim() || p.url;
   if (!/^https?:\/\//i.test(url)) throw new Error("Enter a full https:// link to audit");
-  const r = await ai({ web: true, temperature: 0.3, prompt: `Do a conversion-rate audit of the landing page ${url} for this product.\n${productContext(p)}\nRead the live page first. Judge headline/offer clarity, trust, CTA, speed to value, mobile layout cues, SEO basics, and social proof. Be blunt and specific to what is actually on the page.
+  const r = await ai({ web: !isCloud(), urls: [url], temperature: 0.3, prompt: `Do a conversion-rate audit of the landing page ${url} for this product.\n${productContext(p)}\nRead the live page first. Judge headline/offer clarity, trust, CTA, speed to value, mobile layout cues, SEO basics, and social proof. Be blunt and specific to what is actually on the page.
 Return JSON: {"accessible":true,"score":0-100,"summary":"2 sentences","categories":[{"name":"Headline & offer","score":0-100,"notes":""},{"name":"Call to action","score":0-100,"notes":""},{"name":"Trust & proof","score":0-100,"notes":""},{"name":"Clarity","score":0-100,"notes":""},{"name":"SEO basics","score":0-100,"notes":""},{"name":"Mobile & speed cues","score":0-100,"notes":""}],"issues":[{"severity":"high|med|low","area":"","issue":"","fix":""}],"quick_wins":["5"],"rewritten_headline":"","rewritten_subhead":"","rewritten_cta":""}
 If you could not read the page, return {"accessible":false,"summary":"why"} only.` });
   p.audit = Object.assign({ url, sources: r.sources, at: new Date().toISOString() }, r.data);
-  if (!r.web && p.audit.accessible !== false) p.audit.summary = "(Live page could not be fetched; based on brief.) " + (p.audit.summary || "");
+  if (!r.web && !isCloud() && p.audit.accessible !== false) p.audit.summary = "(Live page could not be fetched; based on brief.) " + (p.audit.summary || "");
   save(); remember("audit", `Site audit ${p.audit.score ?? ""}: ${p.name}`, p.id, p.id);
 });
 A.auditTasks = () => {
@@ -1234,7 +1265,7 @@ function buildSlots(cfg, n) {
   return slots;
 }
 A.apStart = () => {
-  if (!hasKey()) { location.hash = "#/settings"; return toast("Add your free Gemini key first", true); }
+  if (!hasKey()) { location.hash = "#/settings"; return toast("Enter your HSW365 access code first", true); }
   const cfg = readAutoCfg();
   if (!cfg.apps.length) return toast("Pick at least one app", true);
   if (!cfg.platforms.length) return toast("Pick at least one platform", true);
@@ -1367,7 +1398,7 @@ async function importFile(file) {
 /* settings */
 A.saveSettings = () => {
   const s = state.settings;
-  s.provider = $("#sProv").value; s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest";
+  s.provider = $("#sProv").value; s.cloudKey = $("#sCloud").value.trim(); s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest";
   s.groqKey = $("#sGroq").value.trim(); s.groqModel = $("#sGroqM").value.trim() || "llama-3.3-70b-versatile";
   s.allowEmoji = $("#sEmoji").checked; s.autoUtm = $("#sUtm").checked; s.rateDelay = Math.max(1000, +$("#sDelay").value || 6500);
   save(); toast("Settings saved"); render();
@@ -1379,7 +1410,7 @@ A.testAi = () => busy("stest", async () => {
 });
 A.saveSettingsQuiet = () => {
   const s = state.settings;
-  s.provider = $("#sProv").value; s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest"; s.groqKey = $("#sGroq").value.trim(); s.groqModel = $("#sGroqM").value.trim() || "llama-3.3-70b-versatile";
+  s.provider = $("#sProv").value; s.cloudKey = $("#sCloud").value.trim(); s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest"; s.groqKey = $("#sGroq").value.trim(); s.groqModel = $("#sGroqM").value.trim() || "llama-3.3-70b-versatile";
   save();
 };
 A.resetAll = () => modal(`<div class="h2">Erase everything?</div><p class="muted" style="margin-top:8px">Deletes every post, plan, task, link and memory in this browser. Export a backup first. Synced clone-agent memories are not touched.</p><div class="row end" style="margin-top:18px"><button class="btn" data-act="closeModal">Cancel</button><button class="btn danger" data-act="resetYes">Erase</button></div>`);
@@ -1431,6 +1462,7 @@ load();
 shell();
 bind();
 render();
+if (ui.unlocked) toast("Unlocked. HSW365 AI is ready.");
 if (state.settings.cloneSync) flushSync();
 window.HSW365Promo = { state: () => state, ai, parseJSON, utm, applyUtm, buildSlots };
 })();
