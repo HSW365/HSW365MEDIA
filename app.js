@@ -818,9 +818,11 @@
   }
   function payFallback(what, amount) {
     var h = S.profile ? '@' + S.profile.handle : 'your handle';
-    modal('<h2>' + what + '</h2><p>Card checkout is not switched on yet. You can pay <b>' + amount + '</b> by Cash App to <b>$hsw365</b>. Put <b>' + esc(h) + '</b> in the note so we know which channel to switch on.</p>' +
-      '<p class="stat">Your account is updated once the payment is confirmed. Questions: ' + CONTACT + '</p>' +
-      '<div class="acts"><a class="btn" href="mailto:' + CONTACT + '">Email us</a><button class="btn primary" id="pfOk">Got it</button></div>');
+    var n = (String(amount).match(/\d+(?:\.\d+)?/) || [''])[0];
+    modal('<h2>' + what + '</h2><p>Pay <b>' + amount + '</b> by Cash App or Zelle. Put <b>' + esc(h) + '</b> in the note so we switch on the right channel.</p>' +
+      '<p><b>Cash App:</b> $hsw365<br><b>Zelle:</b> 856-796-8081</p>' +
+      '<p class="stat">Your account is updated as soon as the payment is confirmed, usually the same day. Questions: ' + CONTACT + '</p>' +
+      '<div class="acts"><button class="btn" id="pfOk">Paid by Zelle</button><a class="btn primary" target="_blank" rel="noopener" href="https://cash.app/$hsw365' + (n ? '/' + n : '') + '">Pay with Cash App</a></div>');
     document.getElementById('pfOk').onclick = closeModal;
   }
   async function vMembership(sub) {
