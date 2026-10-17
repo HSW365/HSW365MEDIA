@@ -5,6 +5,9 @@
    everything it creates (local + optional sync to the HSW365 clone-agent). */
 (() => {
 "use strict";
+/* Student Edition: loaded from /academy/engine.html for course buyers.
+   Own brand, own free AI key, blank workspace, separate storage. */
+const STUDENT = window.HSW365_EDITION === "student";
 
 /* ---------- utils ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -78,7 +81,7 @@ const PF = {
   reddit: { name: "Reddit", s: "RD", c: "#f97316", limit: 40000, title: 300, titleLabel: "Title", open: (t, u, ti) => `https://www.reddit.com/submit?type=TEXT&title=${enc(ti || "")}&text=${enc(t)}`,
     guide: "title: plain and honest, no hype. text: value first, openly say you are the founder, ask for feedback, link once near the end." },
   email: { name: "Email", s: "EM", c: "#fbbf24", limit: 5000, title: 120, titleLabel: "Subject", open: (t, u, ti) => `mailto:?subject=${enc(ti || "")}&body=${enc(t)}`,
-    guide: "title is the subject line (under 60 characters, curiosity, no clickbait). text: plain-text email 80-150 words, personal tone, one link CTA, sign off as Elvin, HSW365 Media." }
+    guide: "title is the subject line (under 60 characters, curiosity, no clickbait). text: plain-text email 80-150 words, personal tone, one link CTA, sign off as {SIGNOFF}." }
 };
 const PF_KEYS = Object.keys(PF);
 const pfBadge = (k) => `<span class="pf" style="background:${PF[k].c}" title="${PF[k].name}">${PF[k].s}</span>`;
@@ -88,12 +91,13 @@ const FORMATS = ["Talking-head video", "Faceless b-roll video", "Screen-recordin
 const TONES = ["Real & direct", "Hype", "Motivational", "Educational", "Funny", "Storytelling"];
 
 /* ---------- state ---------- */
-const KEY = "hsw365.promo.v1";
+const KEY = STUDENT ? "hsw365.academy.engine.v1" : "hsw365.promo.v1";
 const CLOUD_URL = "https://ucgymjcenpddqshokybj.supabase.co/functions/v1/promo-ai";
 const defaults = () => ({
   v: 1,
   settings: {
-    provider: "cloud", cloudUrl: CLOUD_URL, cloudKey: "",
+    provider: STUDENT ? "gemini" : "cloud", cloudUrl: CLOUD_URL, cloudKey: "",
+    brand: { name: "", founder: "", philosophy: "", handles: "", email: "" },
     geminiKey: "", geminiModel: "gemini-flash-latest",
     groqKey: "", groqModel: "llama-3.3-70b-versatile",
     allowEmoji: false, autoUtm: true, rateDelay: 6500,
@@ -109,8 +113,10 @@ function load() {
   catch { state = defaults(); }
   state.settings = Object.assign(defaults().settings, state.settings || {});
   if (!state.settings.cloudUrl) state.settings.cloudUrl = CLOUD_URL;
-  if (state.settings.provider === "gemini" && !state.settings.geminiKey) state.settings.provider = "cloud";
-  const unlock = location.hash.match(/^#key=([^&]+)/);
+  state.settings.brand = Object.assign(defaults().settings.brand, state.settings.brand || {});
+  if (STUDENT) { if (state.settings.provider === "cloud") state.settings.provider = "gemini"; state.settings.cloneSync = false; }
+  else if (state.settings.provider === "gemini" && !state.settings.geminiKey) state.settings.provider = "cloud";
+  const unlock = !STUDENT && location.hash.match(/^#key=([^&]+)/);
   if (unlock) {
     state.settings.cloudKey = decodeURIComponent(unlock[1]);
     state.settings.provider = "cloud";
@@ -192,9 +198,17 @@ async function flushSync(force) {
 
 /* ---------- AI ---------- */
 const BANNED = "unlock, elevate, game-changer, game changer, revolutionize, seamless, seamlessly, leverage, dive in, delve, in today's fast-paced world, look no further, supercharge, take it to the next level, transform your, cutting-edge, empower, harness, embark, tapestry, landscape";
+function brand() {
+  if (!STUDENT) return window.HSW365_BRAND;
+  const b = state.settings.brand || {};
+  return { name: b.name || "the business", founder: b.founder || "the founder", philosophy: b.philosophy || "Real value, told straight", handles: b.handles || "", email: b.email || "" };
+}
+const CAMP = () => STUDENT ? (slugify(state.settings.brand?.name || "") === "app" ? "promo" : slugify(state.settings.brand.name) + "-promo") : "hsw365-promo";
+const signOff = () => { const b = brand(); const who = String(b.founder || "").split(/[(,—]/)[0].trim(); return STUDENT ? `${who || "the founder"}, ${b.name}` : "Elvin, HSW365 Media"; };
+const keyMsg = () => STUDENT ? "Add your free Gemini or Groq key in Settings first." : "Enter your HSW365 access code in Settings first.";
 function systemPrompt() {
-  const b = window.HSW365_BRAND;
-  return `You are the HSW365 Promo Engine: an elite growth marketer and direct-response copywriter acting as the AI marketing co-founder for ${b.name}.
+  const b = brand();
+  return `You are ${STUDENT ? "an AI marketing co-founder" : "the HSW365 Promo Engine"}: an elite growth marketer and direct-response copywriter acting as the AI marketing co-founder for ${b.name}.
 Founder: ${b.founder}. Philosophy: "${b.philosophy}". Social handles: ${b.handles}.
 Voice: a real founder talking to real people. Confident, direct, specific, street-smart, never corporate, never generic.
 Hard rules:
@@ -204,8 +218,7 @@ Hard rules:
 - Never invent statistics, user counts, reviews, testimonials, earnings or results. Never promise guaranteed outcomes.
 - Never use these words or phrases: ${BANNED}.
 - ${state.settings.allowEmoji ? "Emojis allowed sparingly (max 2 per piece)." : "Do not use any emojis."}
-- Write the brand as "HSW365" or "Hoodstar365", never "HOODSTAR" alone.
-- Always answer with valid JSON only, no markdown fences, matching the schema you are given.`;
+${STUDENT ? "" : '- Write the brand as "HSW365" or "Hoodstar365", never "HOODSTAR" alone.\n'}- Always answer with valid JSON only, no markdown fences, matching the schema you are given.`;
 }
 function productContext(p, opts = {}) {
   const b = p.brief || {};
@@ -243,7 +256,7 @@ const providerName = () => ({ cloud: "HSW365 AI", groq: "Groq", gemini: "Gemini"
 const isCloud = () => state.settings.provider === "cloud";
 const httpUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : null);
 async function ai({ prompt, web = false, temperature = 0.9, urls = [] }) {
-  if (!hasKey()) { location.hash = "#/settings"; throw new Error(state.settings.provider === "cloud" ? "Enter your HSW365 access code in Settings first." : "Add your free AI key in Settings first."); }
+  if (!hasKey()) { location.hash = "#/settings"; throw new Error(state.settings.provider === "cloud" ? keyMsg() : "Add your free AI key in Settings first."); }
   const s = state.settings;
   if (s.provider === "cloud") return cloudCall(prompt, web, temperature, urls.filter(Boolean));
   if (s.provider === "groq") return groqCall(prompt, temperature);
@@ -314,7 +327,7 @@ async function groqCall(prompt, temperature) {
 }
 
 /* ---------- UTM ---------- */
-function utm(url, source, medium = "social", campaign = "hsw365-promo", content = "") {
+function utm(url, source, medium = "social", campaign = CAMP(), content = "") {
   if (!/^https?:\/\//i.test(url || "")) return url;
   try {
     const u = new URL(url);
@@ -329,7 +342,7 @@ function applyUtm(p, pfKey, text) {
   if (!state.settings.autoUtm || !text || !/^https?:/i.test(p.url || "")) return text;
   const base = p.url.replace(/\/$/, "");
   const re = new RegExp(base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\/?(?![\\w/?#%-])", "g");
-  return text.replace(re, utm(p.url, pfKey, pfKey === "email" ? "email" : "social", "hsw365-promo", p.slug));
+  return text.replace(re, utm(p.url, pfKey, pfKey === "email" ? "email" : "social", CAMP(), p.slug));
 }
 
 /* ---------- prompts ---------- */
@@ -339,7 +352,7 @@ const postSchema = (pfs, script) => `{
   "platforms": { ${pfs.map((k) => `"${k}": { ${PF[k].title ? `"title": "...", ` : ""}"text": "..." }`).join(", ")} }${script ? `,
   "script": { "duration": "e.g. 25s", "hook": "spoken first 2 seconds", "onscreen_text": ["..."], "beats": [ { "time": "0-3s", "visual": "what is on screen", "voiceover": "what is said" } ], "cta": "...", "audio": "music or sound direction" }` : ""}
 }`;
-const pfGuides = (pfs) => pfs.map((k) => `- ${k} (${PF[k].name}, max ${PF[k].limit} chars${PF[k].title ? ", " + PF[k].titleLabel.toLowerCase() + " max " + PF[k].title : ""}): ${PF[k].guide}`).join("\n");
+const pfGuides = (pfs) => pfs.map((k) => `- ${k} (${PF[k].name}, max ${PF[k].limit} chars${PF[k].title ? ", " + PF[k].titleLabel.toLowerCase() + " max " + PF[k].title : ""}): ${PF[k].guide.replace("{SIGNOFF}", signOff())}`).join("\n");
 const isVideo = (f) => /video|demo|skit|story/i.test(f || "");
 
 function recentHooks(p, n = 20) {
@@ -405,10 +418,10 @@ function shell() {
   document.body.innerHTML = `
   <div class="shell">
     <aside class="side" id="side">
-      <div class="brand"><div class="mark">HSW</div><div><b>Promo Engine</b><small>HSW365 MEDIA</small></div></div>
+      <div class="brand"><div class="mark">HSW</div><div><b>Promo Engine</b><small>${STUDENT ? "ACADEMY EDITION" : "HSW365 MEDIA"}</small></div></div>
       <div class="prod-switch"><select id="prodSel" aria-label="Active app"></select></div>
       <nav class="nav" id="nav"></nav>
-      <div class="side-foot"><a href="payments.html" style="color:var(--cy);font-weight:600">Member payments &rarr;</a><br><br>Built by HSW365 Media<br><a href="mailto:hsw365media@gmail.com">hsw365media@gmail.com</a></div>
+      <div class="side-foot">${STUDENT ? `<a href="./" style="color:var(--cy);font-weight:600">Course home &rarr;</a>` : `<a href="payments.html" style="color:var(--cy);font-weight:600">Member payments &rarr;</a>`}<br><br>Built by HSW365 Media<br><a href="mailto:hsw365media@gmail.com">hsw365media@gmail.com</a></div>
     </aside>
     <div class="main">
       <header class="top">
@@ -446,13 +459,14 @@ function updateTop() {
   const mem = $("#pMem");
   if (mem) mem.innerHTML = `<span class="dot ${state.settings.cloneSync ? (unsynced ? "warn" : "ok") : ""}"></span>Memory ${num(state.log.length)}`;
   const pai = $("#pAi");
-  if (pai) pai.innerHTML = `<span class="dot ${hasKey() ? "ok" : "warn"}"></span>${hasKey() ? providerName() : "Add access code"}`;
+  if (pai) pai.innerHTML = `<span class="dot ${hasKey() ? "ok" : "warn"}"></span>${hasKey() ? providerName() : STUDENT ? "Add free AI key" : "Add access code"}`;
 }
 function softRender() { if (["autopilot", "home", "posts", "calendar", "dashboard"].includes(routeName()) && !document.activeElement?.matches("input,textarea,select")) render(); else updateTop(); }
 function render() {
   updateTop();
   const r = routeName();
-  const fn = VIEWS[r] || VIEWS.home;
+  let fn = VIEWS[r] || VIEWS.home;
+  if (!prod() && !["home", "settings", "memory"].includes(r)) fn = VIEWS.home;
   const view = $("#view");
   const scroll = view.scrollTop;
   view.innerHTML = `<div class="wrap">${fn(prod())}</div>`;
@@ -480,9 +494,9 @@ VIEWS.home = (p) => {
   const tasks = state.tasks.filter((t) => t.productId === p?.id && !t.done).slice(0, 5);
   return `
   <section style="padding:24px 0 34px">
-    <div class="eyebrow">HSW365 AI marketing co-founder</div>
+    <div class="eyebrow">${STUDENT ? `${esc(brand().name === "the business" ? "Your" : brand().name)} AI marketing co-founder` : "HSW365 AI marketing co-founder"}</div>
     <h1 class="h1" style="margin:12px 0 0">You built it.<br><em>Now let's get you users.</em></h1>
-    <p class="lead">Plans and runs promotion for every HSW365 app across Instagram, TikTok, YouTube, X, Threads, Facebook, LinkedIn, Reddit and email — and remembers everything it makes.</p>
+    <p class="lead">${STUDENT && !state.products.length ? "Step 1: add your free AI key and brand in <a href=\"#/settings\">Settings</a>. Step 2: paste your website or product link below. The engine researches it and builds your brief." : ""}${STUDENT && !state.products.length ? "" : `Plans and runs promotion for every ${STUDENT ? "product you sell" : "HSW365 app"} across Instagram, TikTok, YouTube, X, Threads, Facebook, LinkedIn, Reddit and email — and remembers everything it makes.`}</p>
     <div class="hero-input" style="margin-top:22px">
       <input id="newUrl" placeholder="Paste any app or site link to add it" autocomplete="off">
       ${bbtn("addUrl", `Get started ${ic("arrow")}`, "addFromUrl")}
@@ -692,7 +706,7 @@ function pcard(k, v, p) {
   const P = PF[k];
   const len = (v.text || "").length;
   return `<div class="pcard" data-pf="${k}">
-    <div class="pcard-h">${pfBadge(k)}<b>${P.name}</b><span class="h">${esc(window.HSW365_BRAND.handles.split(",")[0])}</span><span class="sp"></span>
+    <div class="pcard-h">${pfBadge(k)}<b>${P.name}</b><span class="h">${esc(String(brand().handles || "").split(",")[0])}</span><span class="sp"></span>
       <input class="in" data-rwi="${k}" placeholder="Rewrite instruction (optional)" style="max-width:240px;border:1px solid var(--b2)!important;border-radius:8px!important;padding:6px 10px;font-weight:400;font-size:12px">
       ${bbtn("rw-" + k, `${ic("refresh")} Rewrite`, "rewrite", "sm", `data-pf="${k}"`)}</div>
     ${P.title ? `<input class="in" data-draft="${k}.title" value="${esc(v.title || "")}" placeholder="${P.titleLabel}">` : ""}
@@ -815,7 +829,7 @@ VIEWS.autopilot = () => {
     ${total ? `<div class="prog" style="margin-top:14px"><i style="width:${Math.round((100 * doneN) / total)}%"></i></div>` : ""}
   </div>
   ${total ? `<div class="card pad0 list" style="margin-top:16px">${a.jobs.map((j) => `<div class="li"><div class="grow"><div class="t">${esc(prod(j.productId)?.name || "?")}</div><div class="s">${j.n} posts${j.error ? " · " + esc(j.error) : ""}</div></div><span class="tag ${j.done ? (j.error ? "rd" : "gn") : a.running && a.cursor === j.id ? "vi" : ""}">${j.done ? (j.error ? "failed" : "done") : a.running && a.cursor === j.id ? "writing" : "queued"}</span></div>`).join("")}</div>` : ""}
-  ${!hasKey() ? `<p class="muted" style="margin-top:12px">Enter your HSW365 access code in <a href="#/settings">Settings</a> to run.</p>` : ""}`;
+  ${!hasKey() ? `<p class="muted" style="margin-top:12px">${STUDENT ? "Add your free AI key" : "Enter your HSW365 access code"} in <a href="#/settings">Settings</a> to run.</p>` : ""}`;
 };
 
 VIEWS.dashboard = () => {
@@ -855,7 +869,7 @@ VIEWS.links = (p) => {
     <label class="f">Destination<input class="in" id="lUrl" value="${esc(p.url)}" placeholder="https://..."></label>
     <label class="f">Source<select class="in" id="lSrc">${[...PF_KEYS, "bio", "dm", "qr", "flyer"].map((k) => `<option>${k}</option>`).join("")}</select></label>
     <label class="f">Medium<select class="in" id="lMed">${["social", "bio", "dm", "email", "paid", "offline"].map((k) => `<option>${k}</option>`).join("")}</select></label>
-    <label class="f">Campaign<input class="in" id="lCamp" value="hsw365-promo"></label>
+    <label class="f">Campaign<input class="in" id="lCamp" value="${esc(CAMP())}"></label>
     <label class="f">Content (optional)<input class="in" id="lCont" placeholder="hook-a, video-2..."></label>
     <label class="f">Label<input class="in" id="lLabel" placeholder="IG bio link"></label>
   </div><div class="row end" style="margin-top:14px"><button class="btn pri" data-act="makeLink">${ic("link")} Create link</button></div></div>
@@ -912,15 +926,15 @@ VIEWS.memory = () => {
   const s = state.settings;
   const unsynced = state.log.filter((e) => !e.synced).length;
   let bytes = 0; try { bytes = (localStorage.getItem(KEY) || "").length; } catch {}
-  return head("System", "Memory", "Everything the engine has ever created, kept forever. Backed up locally and synced to your clone agent.",
+  return head("System", "Memory", STUDENT ? "Everything the engine has ever created, kept in this browser. Export a backup every week." : "Everything the engine has ever created, kept forever. Backed up locally and synced to your clone agent.",
     `<button class="btn" data-act="exportAll">${ic("down")} Export backup</button><label class="btn" style="cursor:pointer">${ic("up")} Import<input type="file" id="importFile" accept="application/json" hidden></label>`) + `
   <div class="grid g4">
     <div class="card stat"><b>${num(state.log.length)}</b><span>Things remembered</span></div>
     <div class="card stat"><b>${num(state.posts.length)}</b><span>Posts</span></div>
-    <div class="card stat"><b>${num(unsynced)}</b><span>Waiting to sync</span></div>
+    <div class="card stat"><b>${num(STUDENT ? state.links.length : unsynced)}</b><span>${STUDENT ? "Tracked links" : "Waiting to sync"}</span></div>
     <div class="card stat"><b>${(bytes / 1024 / 1024).toFixed(2)}<span style="font-size:14px"> MB</span></b><span>Local storage used</span></div>
   </div>
-  <div class="card" style="margin-top:16px">
+  ${STUDENT ? "" : `<div class="card" style="margin-top:16px">
     <div class="row between"><div><div class="h3">Clone agent sync</div><p class="muted" style="margin-top:4px">Every brief, plan, post and link is saved to your clone agent so it remembers everything created here.</p></div>
     <label class="chk ${s.cloneSync ? "on" : ""}"><input type="checkbox" id="mSync" ${s.cloneSync ? "checked" : ""}> Sync on</label></div>
     <div class="grid g2" style="margin-top:12px">
@@ -932,7 +946,7 @@ VIEWS.memory = () => {
       <button class="btn" data-act="memSave">Save</button>
       ${bbtn("mpush", `${ic("up")} Sync ${num(unsynced)} now`, "memPush")}
     </div>
-  </div>
+  </div>`}
   <div class="row" style="margin:24px 0 12px"><div class="h2" style="margin-right:auto">Timeline</div>
     <select class="in" id="memF" style="width:auto"><option value="all">Everything</option>${types.map((t) => `<option ${t === f ? "selected" : ""}>${t}</option>`).join("")}</select></div>
   ${list.length ? `<div class="card pad0 list">${list.map((e) => `<div class="li"><span class="tag ${e.type === "post" ? "vi" : "cy"}">${esc(e.type)}</span><div class="grow" ${e.type === "post" && e.ref ? `data-act="openPost" data-id="${e.ref}" style="cursor:pointer"` : ""}><div class="t">${esc(e.title)}</div><div class="s">${esc(prodBySlug(e.slug)?.name || "")} · ${esc(fmtDate(e.t))}</div></div>${e.synced ? '<span class="tag gn">synced</span>' : ""}</div>`).join("")}</div>` : empty("Nothing remembered yet", "Everything you create shows up here.")}`;
@@ -940,14 +954,24 @@ VIEWS.memory = () => {
 
 VIEWS.settings = () => {
   const s = state.settings;
-  return head("System", "Settings", "HSW365 AI runs on your Gemini and Groq keys, held on the server — nothing secret lives in this page.") + `
+  return head("System", "Settings", STUDENT ? "Your keys and brand stay in this browser only. Nothing is sent anywhere except straight to the AI provider you pick." : "HSW365 AI runs on your Gemini and Groq keys, held on the server — nothing secret lives in this page.") + `
+  ${STUDENT ? `<div class="card stack" style="margin-bottom:16px">
+    <div class="h3">Your brand</div>
+    <p class="muted" style="font-size:12.5px">Every brief, plan and post is written in this voice.</p>
+    <div class="grid g2">
+      <label class="f">Business / brand name<input class="in" id="sbName" value="${esc(s.brand.name)}" placeholder="Rivera Roofing"></label>
+      <label class="f">Founder (name + one line about you)<input class="in" id="sbFounder" value="${esc(s.brand.founder)}" placeholder="Ana Rivera, second-generation roofer"></label>
+      <label class="f">Philosophy / promise<input class="in" id="sbPhil" value="${esc(s.brand.philosophy)}" placeholder="Done right the first time"></label>
+      <label class="f">Social handles<input class="in" id="sbHandles" value="${esc(s.brand.handles)}" placeholder="@riveraroofing, @anarivera"></label>
+    </div>
+  </div>` : ""}
   <div class="grid g2">
     <div class="card stack">
       <div class="h3">AI provider</div>
-      <label class="f">Provider<select class="in" id="sProv"><option value="cloud" ${s.provider === "cloud" ? "selected" : ""}>HSW365 AI (Gemini + Groq, built in)</option><option value="gemini" ${s.provider === "gemini" ? "selected" : ""}>Google Gemini (own key in this browser)</option><option value="groq" ${s.provider === "groq" ? "selected" : ""}>Groq (own key in this browser)</option></select></label>
-      <label class="f">HSW365 access code<input class="in" id="sCloud" type="password" value="${esc(s.cloudKey)}" placeholder="hsw-..."></label>
+      <label class="f">Provider<select class="in" id="sProv">${STUDENT ? "" : `<option value="cloud" ${s.provider === "cloud" ? "selected" : ""}>HSW365 AI (Gemini + Groq, built in)</option>`}<option value="gemini" ${s.provider === "gemini" ? "selected" : ""}>Google Gemini (own key in this browser)</option><option value="groq" ${s.provider === "groq" ? "selected" : ""}>Groq (own key in this browser)</option></select></label>
+      ${STUDENT ? "" : `<label class="f">HSW365 access code<input class="in" id="sCloud" type="password" value="${esc(s.cloudKey)}" placeholder="hsw-..."></label>`}
       <label class="f">Gemini API key<input class="in" id="sGem" type="password" value="${esc(s.geminiKey)}" placeholder="AIza..."></label>
-      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-size:12.5px">Get a free Gemini key ${ic("ext")}</a>
+      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-size:12.5px">Get a free Gemini key ${ic("ext")}</a>${STUDENT ? `<a href="https://console.groq.com/keys" target="_blank" rel="noopener" style="font-size:12.5px">Get a free Groq key (backup) ${ic("ext")}</a>` : ""}
       <label class="f">Gemini model<input class="in" id="sGemM" value="${esc(s.geminiModel)}"></label>
       <label class="f">Groq API key<input class="in" id="sGroq" type="password" value="${esc(s.groqKey)}" placeholder="gsk_..."></label>
       <label class="f">Groq model<input class="in" id="sGroqM" value="${esc(s.groqModel)}"></label>
@@ -1157,7 +1181,7 @@ A.rewrite = (el) => {
     const cur = d.content.platforms[k];
     const r = await ai({ temperature: 1, prompt: `Rewrite this ${PF[k].name} post for the product below. ${instr ? "Instruction: " + instr : "Make it sharper with a stronger hook and a different opening line."}
 ${productContext(p)}
-Platform rule: ${PF[k].guide} Max ${PF[k].limit} characters.
+Platform rule: ${PF[k].guide.replace("{SIGNOFF}", signOff())} Max ${PF[k].limit} characters.
 CURRENT:${cur.title ? "\nTITLE: " + cur.title : ""}
 ${cur.text}
 Return JSON: {${PF[k].title ? '"title":"...",' : ""}"text":"..."}` });
@@ -1265,7 +1289,7 @@ function buildSlots(cfg, n) {
   return slots;
 }
 A.apStart = () => {
-  if (!hasKey()) { location.hash = "#/settings"; return toast("Enter your HSW365 access code first", true); }
+  if (!hasKey()) { location.hash = "#/settings"; return toast(keyMsg(), true); }
   const cfg = readAutoCfg();
   if (!cfg.apps.length) return toast("Pick at least one app", true);
   if (!cfg.platforms.length) return toast("Pick at least one platform", true);
@@ -1317,7 +1341,7 @@ A.makeLink = () => {
   const p = prod();
   const url = $("#lUrl").value.trim();
   if (!/^https?:\/\//i.test(url)) return toast("Enter a full https:// destination", true);
-  const l = { id: uid(), productId: p.id, label: $("#lLabel").value.trim(), source: $("#lSrc").value, medium: $("#lMed").value, campaign: $("#lCamp").value.trim() || "hsw365-promo", content: $("#lCont").value.trim(), createdAt: new Date().toISOString() };
+  const l = { id: uid(), productId: p.id, label: $("#lLabel").value.trim(), source: $("#lSrc").value, medium: $("#lMed").value, campaign: $("#lCamp").value.trim() || CAMP(), content: $("#lCont").value.trim(), createdAt: new Date().toISOString() };
   l.full = utm(url, l.source, l.medium, l.campaign, l.content);
   state.links.unshift(l); save(); remember("link", `Link: ${l.label || l.source} for ${p.name}`, l.id, p.id); copy(l.full); render();
 };
@@ -1396,21 +1420,25 @@ async function importFile(file) {
 }
 
 /* settings */
+function readBrand(s) {
+  if (!$("#sbName")) return;
+  s.brand = { name: $("#sbName").value.trim(), founder: $("#sbFounder").value.trim(), philosophy: $("#sbPhil").value.trim(), handles: $("#sbHandles").value.trim(), email: s.brand?.email || "" };
+}
 A.saveSettings = () => {
   const s = state.settings;
-  s.provider = $("#sProv").value; s.cloudKey = $("#sCloud").value.trim(); s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest";
+  s.provider = $("#sProv").value; s.cloudKey = $("#sCloud") ? $("#sCloud").value.trim() : s.cloudKey; readBrand(s); s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest";
   s.groqKey = $("#sGroq").value.trim(); s.groqModel = $("#sGroqM").value.trim() || "llama-3.3-70b-versatile";
   s.allowEmoji = $("#sEmoji").checked; s.autoUtm = $("#sUtm").checked; s.rateDelay = Math.max(1000, +$("#sDelay").value || 6500);
   save(); toast("Settings saved"); render();
 };
 A.testAi = () => busy("stest", async () => {
   A.saveSettingsQuiet();
-  const r = await ai({ temperature: 0, prompt: 'Reply with JSON {"ok":true,"line":"one sentence hello from the HSW365 Promo Engine"}' });
+  const r = await ai({ temperature: 0, prompt: 'Reply with JSON {"ok":true,"line":"one sentence hello from your AI marketing co-founder"}' });
   toast(r.data.line || "AI connected");
 });
 A.saveSettingsQuiet = () => {
   const s = state.settings;
-  s.provider = $("#sProv").value; s.cloudKey = $("#sCloud").value.trim(); s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest"; s.groqKey = $("#sGroq").value.trim(); s.groqModel = $("#sGroqM").value.trim() || "llama-3.3-70b-versatile";
+  s.provider = $("#sProv").value; s.cloudKey = $("#sCloud") ? $("#sCloud").value.trim() : s.cloudKey; readBrand(s); s.geminiKey = $("#sGem").value.trim(); s.geminiModel = $("#sGemM").value.trim() || "gemini-flash-latest"; s.groqKey = $("#sGroq").value.trim(); s.groqModel = $("#sGroqM").value.trim() || "llama-3.3-70b-versatile";
   save();
 };
 A.resetAll = () => modal(`<div class="h2">Erase everything?</div><p class="muted" style="margin-top:8px">Deletes every post, plan, task, link and memory in this browser. Export a backup first. Synced clone-agent memories are not touched.</p><div class="row end" style="margin-top:18px"><button class="btn" data-act="closeModal">Cancel</button><button class="btn danger" data-act="resetYes">Erase</button></div>`);
@@ -1463,6 +1491,7 @@ shell();
 bind();
 render();
 if (ui.unlocked) toast("Unlocked. HSW365 AI is ready.");
+if (STUDENT && !hasKey()) location.hash = "#/settings";
 if (state.settings.cloneSync) flushSync();
 window.HSW365Promo = { state: () => state, ai, parseJSON, utm, applyUtm, buildSlots };
 })();
