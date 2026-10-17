@@ -158,13 +158,13 @@ window.HSW365_APPS = [
     guardrails: "CROA compliant: never promise removal of accurate items, score increases or results. Never imply guaranteed outcomes."
   },
   {
-    slug: "nil", name: "NIL Platform", category: "Sports",
-    url: "",
-    tagline: "Get paid for your name.",
-    description: "NIL (name, image, likeness) platform where student athletes and brands sign up and connect for deals.",
-    audience: "Student athletes, their parents, and local brands",
-    offer: "Free signup",
-    showPrice: false, cta: "Sign up"
+    slug: "nil", name: "NIL365", category: "Sports",
+    url: "https://nil365.onrender.com/",
+    tagline: "Your name is worth money.",
+    description: "NIL marketplace where student athletes, students and creators apply to paid brand deals and sign agreements online, with parent or guardian signing for minors.",
+    audience: "Student athletes, their parents, creators, and local brands that want to sponsor them",
+    offer: "Talent $9/month, brands $49/month",
+    showPrice: true, cta: "Create your profile"
   },
   {
     slug: "artist-empire", name: "Artist Empire", category: "Music",
