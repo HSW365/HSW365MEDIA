@@ -4,7 +4,7 @@
 window.HSW365_APPS = [
   {
     slug: "calltwin", name: "CallTwin", category: "AI SaaS",
-    url: "https://hsw365.github.io/calltwin/",
+    url: "https://hsw365.github.io/calltwin/signup.html",
     tagline: "Never miss a job again.",
     description: "AI receptionist for service businesses. Every caller's name, number, address and the job they need is captured and texted and emailed to the owner instantly. Optional AI Estimate add-on turns job photos into a finished estimate and proposal.",
     audience: "Plumbers, HVAC, electricians, roofers, contractors and local service business owners who lose money on missed calls",
@@ -13,7 +13,7 @@ window.HSW365_APPS = [
   },
   {
     slug: "queenee", name: "QUEENEE", category: "Websites",
-    url: "",
+    url: "https://hsw365.github.io/queenee/",
     tagline: "Your business, live online — built for you.",
     description: "Done-for-you websites for business owners and indie artists, built automatically from your signup info and hosted on your own domain. CallTwin AI receptionist available as an add-on.",
     audience: "Small business owners, indie artists and creators without a real website",
@@ -31,7 +31,7 @@ window.HSW365_APPS = [
   },
   {
     slug: "klipit", name: "Klipit", category: "Creator tools",
-    url: "https://hsw365.github.io/KLIPIT/",
+    url: "https://klipit.onrender.com/?signup",
     tagline: "Paste a link. Get the clips.",
     description: "Paste a stream or VOD link from YouTube, Twitch or Kick and Klipit finds the best moments and cuts them into ready-to-post wide and vertical clips.",
     audience: "Streamers, gamers and clip channels (strong GTA 6 streaming angle)",
@@ -49,7 +49,7 @@ window.HSW365_APPS = [
   },
   {
     slug: "friendy", name: "Friendy", category: "Social",
-    url: "",
+    url: "https://hsw365.github.io/FRIENDY/",
     tagline: "Someone to talk to, always there.",
     description: "Sign up and talk to your new friend any time, in any language. Meet real people from around the world, share photos and message in your inbox.",
     audience: "People who want someone to talk to, late-night thinkers, people far from home",
@@ -67,7 +67,7 @@ window.HSW365_APPS = [
   },
   {
     slug: "speekzone", name: "SpeekZone", category: "Social",
-    url: "",
+    url: "https://hsw365.github.io/SPEEKZONE/",
     tagline: "No algorithm. Just people.",
     description: "Open social platform with a chronological feed — everyone you follow, in order, nothing hidden. Members-only community.",
     audience: "People fed up with algorithm feeds and shadowbans",
