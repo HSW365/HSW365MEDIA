@@ -159,7 +159,7 @@ window.HSW365_APPS = [
   },
   {
     slug: "nil", name: "NIL365", category: "Sports",
-    url: "https://nil365.onrender.com/",
+    url: "https://hsw365.github.io/HSW365MEDIA/nil/",
     tagline: "Your name is worth money.",
     description: "NIL marketplace where student athletes, students and creators apply to paid brand deals and sign agreements online, with parent or guardian signing for minors.",
     audience: "Student athletes, their parents, creators, and local brands that want to sponsor them",

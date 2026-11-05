@@ -242,7 +242,7 @@ function chrome() {
   var L = S.me
     ? [["app", "Dashboard"], ["deals", "Deals"], isBrand() ? ["post", "Post a deal"] : null, ["agreements", "Agreements"], ["membership", "Membership"], ["profile", "Profile"]]
     : [["deals", "Deals"], ["how", "How it works"], ["pricing", "Pricing"]];
-  $("links").innerHTML = L.filter(Boolean).map(function (x) { return '<a href="#/' + x[0] + '" class="' + (r === x[0] ? "on" : "") + '">' + x[1] + "</a>"; }).join("") + (isAdmin() ? '<a href="https://hsw365-promo.onrender.com/payments.html" target="_blank" rel="noopener">Payments</a>' : "");
+  $("links").innerHTML = L.filter(Boolean).map(function (x) { return '<a href="#/' + x[0] + '" class="' + (r === x[0] ? "on" : "") + '">' + x[1] + "</a>"; }).join("") + (isAdmin() ? '<a href="https://hsw365.github.io/HSW365MEDIA/promo/payments.html" target="_blank" rel="noopener">Payments</a>' : "");
   $("navR").innerHTML = S.me ? '<button class="btn sm ghost" id="logout">Log out</button>' : '<a class="btn sm ghost" href="#/login">Log in</a><a class="btn sm gold" href="#/signup">Join</a>';
   var b = "";
   if (S.me && !isMember()) {
