@@ -84,17 +84,17 @@ window.HSW365_APPS = [
     showPrice: true, cta: "Submit your music"
   },
   {
-    slug: "hsw365-store", name: "hsw365.co Store", category: "Commerce",
-    url: "https://hsw365.co",
+    slug: "hsw365-store", name: "hsw365.net Store", category: "Commerce",
+    url: "https://hsw365.net",
     tagline: "Turn Negative Into Positive.",
     description: "Survivor Collection 1-of-1 hand-painted streetwear, Faith Over Fear, Founder's Print Series, plus HSW365 AI products and ebooks.",
     audience: "Streetwear collectors, supporters of the movement, founders",
     offer: "Survivor Collection 1-of-1 pieces; Faith Over Fear $20",
-    showPrice: false, cta: "Shop hsw365.co"
+    showPrice: false, cta: "Shop hsw365.net"
   },
   {
     slug: "build-series", name: "HSW365 Media Build Series", category: "Education",
-    url: "https://hsw365.co",
+    url: "https://hsw365.net",
     tagline: "The one-man founder system.",
     description: "Ebooks and courses for solo founders: TURN NEGATIVE INTO POSITIVE, SHIP IT, THE HSW365 BLUEPRINT master course, and SOLO EMPIRE — the one-man founder system.",
     audience: "Aspiring solo founders, side hustlers, people starting over",
