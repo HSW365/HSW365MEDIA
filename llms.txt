@@ -1,0 +1,11 @@
+# HSW365 Media
+
+> Creative agency: websites, AI tools and marketing for local business.
+
+Built by HSW365 Media LLC (Elvin Torres Sr., Hoodstar365).
+
+## Pages
+- https://hsw365media.com/
+- https://hsw365media.com/nil/
+- https://hsw365media.com/sales/
+- https://hsw365media.com/stream/
