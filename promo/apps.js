@@ -71,7 +71,7 @@ window.HSW365_APPS = [
     tagline: "No algorithm. Just people.",
     description: "Open social platform with a chronological feed — everyone you follow, in order, nothing hidden. Members-only community.",
     audience: "People fed up with algorithm feeds and shadowbans",
-    offer: "Free signup, 90 days free",
+    offer: "Free forever. Optional Verified plan $9.99/month via Apple in-app purchase.",
     showPrice: true, cta: "Join SpeekZone"
   },
   {
