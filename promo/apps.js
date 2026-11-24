@@ -3,6 +3,15 @@
    flagged in the UI so promo never ships with a dead link. */
 window.HSW365_APPS = [
   {
+    slug: "elite", name: "HSW365 Elite", category: "Done-for-you",
+    url: "https://hsw365media.com/elite/",
+    tagline: "Your entire business, built for you.",
+    description: "We build your business's whole infrastructure: website, AI receptionist, estimates and proposals, payments, daily content and lead follow-up. One build, done for you.",
+    audience: "Local service businesses, contractors and owners who want it all set up without doing it themselves",
+    offer: "Builds start at $5,000. Fixed quote before you pay.",
+    showPrice: true, cta: "Apply for Elite"
+  },
+  {
     slug: "calltwin", name: "CallTwin", category: "AI SaaS",
     url: "https://hsw365.github.io/calltwin/signup.html",
     tagline: "Never miss a job again.",
