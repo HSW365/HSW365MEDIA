@@ -35,8 +35,9 @@ body{overflow:auto}
   </div>
   <div id="lock" class="card stack" style="display:none;max-width:460px">
     <div class="h3">Owner access</div>
-    <label class="f">Access code<input class="in" id="code" type="password" placeholder="hsw-..."></label>
-    <button class="btn pri" id="unlock">Unlock</button>
+    <button class="btn pri" id="ownerPin" type="button">Owner login with PIN</button>
+    <label class="f">Or access code<input class="in" id="code" type="password" placeholder="hsw-..."></label>
+    <button class="btn" id="unlock">Unlock</button>
   </div>
   <div id="main" style="display:none">
     <div class="grid g4" id="stats"></div>
@@ -69,8 +70,15 @@ body{overflow:auto}
   var unlockHash = location.hash.match(/^#key=([^&]+)/);
   if (unlockHash) { CODE = decodeURIComponent(unlockHash[1]); try { localStorage.setItem("hsw365.pay.code", CODE); } catch (e) {} history.replaceState(null, "", location.pathname); }
 
+  // Owner PIN session (owner-login.js): hsw-pay-admin re-checks the token with the owner-pin service.
+  function headers() {
+    var h = { "Content-Type": "application/json" };
+    if (CODE) h["x-promo-key"] = CODE;
+    if (window.HSW_OWNER && window.HSW_OWNER_TOKEN) h["x-hsw-owner"] = window.HSW_OWNER_TOKEN;
+    return h;
+  }
   function call(src, body) {
-    return fetch(src.url, { method: "POST", headers: { "Content-Type": "application/json", "x-promo-key": CODE }, body: JSON.stringify(body) })
+    return fetch(src.url, { method: "POST", headers: headers(), body: JSON.stringify(body) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) { var e = new Error(j.error || "Error " + r.status); e.status = r.status; throw e; } return j; }); });
   }
   var rows = [];
@@ -81,7 +89,7 @@ body{overflow:auto}
       rows = [].concat.apply([], lists).sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
       $("lock").style.display = "none"; $("main").style.display = "block"; paint();
     }).catch(function (e) {
-      if (e.status === 401) { $("main").style.display = "none"; $("lock").style.display = "flex"; if (CODE) toast("Access code rejected", true); }
+      if (e.status === 401) { $("main").style.display = "none"; $("lock").style.display = "flex"; if (CODE || window.HSW_OWNER) toast(window.HSW_OWNER ? "Owner PIN session not accepted. Enter your PIN again." : "Access code rejected", true); }
       else toast(e.message, true);
     });
   }
@@ -113,10 +121,13 @@ body{overflow:auto}
       .catch(function (err) { b.disabled = false; toast(err.message, true); });
   });
   $("unlock").addEventListener("click", function () { CODE = $("code").value.trim(); try { localStorage.setItem("hsw365.pay.code", CODE); } catch (e) {} load(); });
+  $("ownerPin").addEventListener("click", function () { if (window.hswOwner) window.hswOwner.open(); });
+  window.addEventListener("hsw-owner", function (e) { if (e.detail && e.detail.owner) load(); });
   $("refresh").addEventListener("click", load);
   setInterval(load, 60000);
   load();
 })();
 </script>
+<script src="owner-login.js?v=3" defer></script>
 </body>
 </html>

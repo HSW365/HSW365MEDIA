@@ -148,11 +148,12 @@
 
     var ta = document.getElementById('topActions');
     if (!S.user) {
-      ta.innerHTML = '<a class="btn golive hide-m" href="#/golive">' + icon('live', 16) + 'Go live</a><a class="btn hide-m" href="#/upload">' + icon('up', 16) + 'Upload</a><a class="btn primary" href="#/login">Sign in</a>';
+      ta.innerHTML = (ownerVip() ? '<a class="pill ok hide-m" href="#/login" title="Owner PIN session: everything is free">VIP / Owner</a>' : '') + '<a class="btn golive hide-m" href="#/golive">' + icon('live', 16) + 'Go live</a><a class="btn hide-m" href="#/upload">' + icon('up', 16) + 'Upload</a><a class="btn primary" href="#/login">Sign in</a>';
     } else {
       var p = S.profile || { display_name: S.user.email, handle: '' };
       var ac = S.access, pill = '';
-      if (ac && ac.paywall && !ac.owner && !ac.is_member) pill = '<a class="pill hide-m' + (ac.on_trial ? '' : ' warn') + '" href="#/membership">' + (ac.on_trial ? 'Free trial / ' + daysLeft(ac.trial_ends) + 'd left' : 'Trial ended') + '</a>';
+      if (ownerVip()) pill = '<a class="pill ok hide-m" href="#/membership" title="Owner PIN session: everything is free">VIP / Owner</a>';
+      else if (ac && ac.paywall && !ac.owner && !ac.is_member) pill = '<a class="pill hide-m' + (ac.on_trial ? '' : ' warn') + '" href="#/membership">' + (ac.on_trial ? 'Free trial / ' + daysLeft(ac.trial_ends) + 'd left' : 'Trial ended') + '</a>';
       ta.innerHTML = pill + '<a class="btn golive hide-m" href="#/golive">' + icon('live', 16) + 'Go live</a><a class="btn primary hide-m" href="#/upload">' + icon('up', 16) + 'Upload</a>' +
         '<div class="menu-wrap"><button class="avatar-btn" id="avBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">' + avatar(p, 38) + '</button>' +
         '<div class="menu" id="avMenu" hidden><div class="who"><b>' + nameOf(p) + '</b><span>@' + esc(p.handle) + '</span></div>' +
@@ -816,6 +817,8 @@
   }
   function needMember() {
     if (!S.access || S.access.can_post) return false;
+    // Owner PIN session on a non-owner channel: the server still decides, so never send the owner to checkout.
+    if (ownerVip()) { toast('Owner VIP: sign in to your owner channel to post. It has full access.'); return true; }
     toast('Your free week is over. Membership keeps you posting.');
     go('#/membership');
     return true;
@@ -870,20 +873,21 @@
       teardown = function () { clearInterval(poll); };
       return;
     }
-    var mState, mBtn = '';
-    if (a.owner) mState = '<span class="pill ok">Owner account / full access</span>';
+    var mState, mBtn = '', vip = ownerVip();
+    if (vip || a.owner) mState = '<span class="pill ok">' + (vip ? 'VIP / Owner / ' : 'Owner account / ') + 'full access</span>';
     else if (!a.paywall) mState = '<span class="pill ok">Free for everyone right now</span>';
     else if (a.is_member) { mState = '<span class="pill ok">Active / renews ' + dateOf(a.member_until) + '</span>'; mBtn = a.has_billing ? '<button class="btn" id="mManage">Manage or cancel</button>' : ''; }
     else if (a.on_trial) { mState = '<span class="pill">Free trial / ' + daysLeft(a.trial_ends) + ' days left</span>'; mBtn = '<button class="btn primary" id="mJoin">Start membership</button>'; }
     else { mState = '<span class="pill warn">Free trial ended</span>'; mBtn = '<button class="btn primary" id="mJoin">Start membership</button>'; }
-    var vState = a.verified ? '<span class="pill ok">Verified</span>' : '<span class="pill">Not verified</span>';
+    var vState = a.verified ? '<span class="pill ok">Verified</span>' : vip ? '<span class="pill ok">Included with VIP</span>' : '<span class="pill">Not verified</span>';
     view.innerHTML = '<div class="page-head"><div><h1>Membership</h1><p>Watching is always free. Membership is for people who go live, upload and chat.</p></div></div>' +
       '<div class="plans"><section class="plan"><span class="feature-tag">Creator membership</span><div class="price"><b>$7</b><span>per month</span></div>' + mState +
       '<ul><li>Go live from your camera or screen</li><li>Upload videos to your channel</li><li>Live chat and comments</li><li>First 7 days free, no card needed</li><li>Cancel any time</li></ul>' + mBtn + '</section>' +
       '<section class="plan v"><span class="feature-tag">Verified</span><div class="price"><b>$10</b><span>per month</span></div>' + vState +
       '<ul><li>Green checkmark next to your name' + VCHECK + '</li><li>Shows on your channel, videos, streams and chat</li><li>Stays on while you subscribe. Cancel any time</li></ul>' +
-      (a.verified ? (a.has_billing && !a.owner ? '<button class="btn" id="vManage">Manage or cancel</button>' : '') : '<button class="btn verify" id="vBuy">Get verified</button>') + '</section></div>' +
-      '<p class="hint stat" style="margin-top:22px">Pay by Cash App or Zelle. Billing questions: <a class="link" href="mailto:' + CONTACT + '">' + CONTACT + '</a></p>';
+      (a.verified ? (a.has_billing && !a.owner && !vip ? '<button class="btn" id="vManage">Manage or cancel</button>' : '') : vip ? '' : '<button class="btn verify" id="vBuy">Get verified</button>') + '</section></div>' +
+      (vip ? '<p class="hint stat" style="margin-top:22px">Signed in with your owner PIN. Nothing to pay here, ever.' + (a.owner ? '' : ' Go live, uploads and chat run on your owner channel.') + '</p>'
+        : '<p class="hint stat" style="margin-top:22px">Pay by Cash App or Zelle. Billing questions: <a class="link" href="mailto:' + CONTACT + '">' + CONTACT + '</a></p>');
     function wire(id, body, label, amount) {
       var b = document.getElementById(id);
       if (!b) return;
@@ -1445,6 +1449,7 @@
       '<div class="field"><label for="lEmail">Email</label><input type="email" id="lEmail" autocomplete="email" required></div>' +
       '<div class="field"><label for="lPass">Password</label><input type="password" id="lPass" autocomplete="current-password" required></div>' +
       '<p class="err" id="lErr"></p><button class="btn primary" style="width:100%">Sign in</button></form>' +
+      (ownerVip() ? '<button class="btn" id="lOwner" type="button" style="width:100%;margin-top:10px">Continue as owner (PIN)</button>' : '') +
       '<p class="alt">New here? <a href="#/signup">Create a channel</a></p><p class="alt">Locked out? Email <a href="mailto:' + CONTACT + '">' + CONTACT + '</a>.</p></div>';
     document.getElementById('lf').onsubmit = async function (e) {
       e.preventDefault();
@@ -1454,6 +1459,16 @@
       b.disabled = false;
       if (x.error) { err.textContent = /confirm/i.test(x.error.message) ? 'Confirm your email first. Check your inbox for the link.' : 'Wrong email or password.'; return; }
       await loadProfile(x.data.user); afterAuth();
+    };
+    var lo = document.getElementById('lOwner');
+    if (lo) lo.onclick = async function () {
+      var err = document.getElementById('lErr');
+      err.textContent = ''; lo.disabled = true;
+      var ok = await ownerSession(true);
+      lo.disabled = false;
+      if (!ok) { err.textContent = 'Owner PIN sign-in is not switched on for Stream yet. Sign in with your owner email.'; return; }
+      var u = (await sb.auth.getUser()).data.user;
+      await loadProfile(u); afterAuth();
     };
   }
   function vSignup() {
@@ -1558,6 +1573,31 @@
     });
     return profileJob;
   }
+  /* ---------- owner PIN (owner-login.js) ---------- */
+  // window.HSW_OWNER is set by owner-login.js after the owner-pin service accepts the PIN. With it the
+  // owner sees no trial, paywall or checkout anywhere. Posting stays server-checked: owner-session trades
+  // the verified PIN token for the owner's own Stream account, where the owner-email rules grant full access.
+  function ownerVip() { return !!window.HSW_OWNER; }
+  var ownerTried = null;
+  function ownerSession(force) {
+    var t = window.HSW_OWNER_TOKEN;
+    if (!ownerVip() || !t || S.user || (!force && ownerTried === t)) return Promise.resolve(!!S.user && ownerVip());
+    ownerTried = t;
+    return fetch(SB_URL + '/functions/v1/owner-session', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'X-HSW-Owner': t }, body: '{}' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j || !j.token_hash) return false;
+        return sb.auth.verifyOtp({ token_hash: j.token_hash, type: 'magiclink' }).then(function (x) { return !x.error && !!(x.data && x.data.session); });
+      })
+      .catch(function () { return false; });
+  }
+  function ownerChanged() {
+    if (!S.ready) return;
+    renderChrome();
+    if (/^#\/(membership|login)/.test(location.hash)) route();
+    if (ownerVip() && !S.user) ownerSession().then(function (ok) { if (ok && /^#\/login/.test(location.hash)) afterAuth(); });
+  }
+  window.addEventListener('hsw-owner', ownerChanged);
   sb.auth.onAuthStateChange(function (event, session) {
     // never await Supabase calls inside this callback
     setTimeout(async function () {
@@ -1574,5 +1614,6 @@
     S.ready = true;
     if ((location.hash || '').indexOf('#/') !== 0 && location.hash) history.replaceState(null, '', location.pathname + '#/');
     route();
+    if (window.HSW_OWNER_READY) window.HSW_OWNER_READY.then(function (on) { if (on) ownerChanged(); });
   })();
 })();

@@ -222,6 +222,10 @@ function busy(btn, on, label) { if (!btn) return; btn.disabled = on; if (label) 
 var isBrand = function () { return S.me && S.me.role === "brand"; };
 var isAdmin = function () { return S.me && /^(hsw365media|hoodstarent365)@gmail\.com$/i.test(S.me.email || ""); };
 var isMember = function () { return !!(S.pay && S.pay.member); };
+// Owner PIN (owner-login.js sets window.HSW_OWNER after the owner-pin service accepts the PIN) or the owner's
+// own account: no banners, prices or checkout. Deals and applications are still checked by the database.
+var pinOwner = function () { return !!window.HSW_OWNER; };
+var ownerVip = function () { return pinOwner() || isAdmin(); };
 var planKey = function () { return isBrand() ? "brand" : "talent"; };
 
 async function loadMe() {
@@ -235,7 +239,7 @@ async function loadMe() {
   S.pay = st.data || null;
 }
 function requireMember() {
-  if (isMember()) return true;
+  if (isMember() || ownerVip()) return true;
   go("#/membership"); toast(isBrand() ? "Activate your brand membership to post deals." : "Activate your membership to apply to deals.");
   return false;
 }
@@ -244,12 +248,12 @@ function requireMember() {
 function chrome() {
   var r = (location.hash.replace(/^#\/?/, "").split("/")[0]) || "";
   var L = S.me
-    ? [["app", "Dashboard"], ["deals", "Deals"], isBrand() ? ["post", "Post a deal"] : null, ["agreements", "Agreements"], ["membership", "Membership"], ["profile", "Profile"]]
+    ? [["app", "Dashboard"], ["deals", "Deals"], isBrand() || isAdmin() ? ["post", "Post a deal"] : null, ["agreements", "Agreements"], ["membership", "Membership"], ["profile", "Profile"]]
     : [["deals", "Deals"], ["how", "How it works"], ["pricing", "Pricing"]];
-  $("links").innerHTML = L.filter(Boolean).map(function (x) { return '<a href="#/' + x[0] + '" class="' + (r === x[0] ? "on" : "") + '">' + x[1] + "</a>"; }).join("") + (isAdmin() ? '<a href="https://hsw365.github.io/HSW365MEDIA/promo/payments.html" target="_blank" rel="noopener">Payments</a>' : "");
-  $("navR").innerHTML = S.me ? '<button class="btn sm ghost" id="logout">Log out</button>' : '<a class="btn sm ghost" href="#/login">Log in</a><a class="btn sm gold" href="#/signup">Join</a>';
+  $("links").innerHTML = L.filter(Boolean).map(function (x) { return '<a href="#/' + x[0] + '" class="' + (r === x[0] ? "on" : "") + '">' + x[1] + "</a>"; }).join("") + (ownerVip() ? '<a href="https://hsw365.github.io/HSW365MEDIA/promo/payments.html" target="_blank" rel="noopener">Payments</a>' : "");
+  $("navR").innerHTML = (pinOwner() ? '<span class="tag gn" title="Owner PIN session: everything is free">VIP &middot; Owner</span>' : "") + (S.me ? '<button class="btn sm ghost" id="logout">Log out</button>' : '<a class="btn sm ghost" href="#/login">Log in</a><a class="btn sm gold" href="#/signup">Join</a>');
   var b = "";
-  if (S.me && !isMember()) {
+  if (S.me && !isMember() && !ownerVip()) {
     b = '<div class="banner"><div class="wrap">' + (S.pay && S.pay.pending ? "We're confirming your payment." :
       (isBrand() ? "Activate your brand membership to post deals and sign athletes — $" + PRICE.brand + "/month." : "Activate your membership to apply to paid deals — $" + PRICE.talent + "/month.") +
       ' <a class="btn sm gold" href="#/membership">Activate</a>') + "</div></div>";
@@ -299,6 +303,7 @@ V.pricing = async function () { return '<div class="page" style="padding-top:110
 V.login = async function () {
   if (S.me) { go("#/app"); return ""; }
   return '<div class="page"><div class="wrap auth"><div class="eyebrow">Welcome back</div><h2 class="h" style="margin:10px 0 24px">Log in</h2>' +
+    (pinOwner() ? '<button class="btn navy wide" id="ownerB" type="button" style="margin-bottom:14px">Continue as owner (PIN)</button>' : "") +
     '<form class="card stack" id="loginF"><label class="f">Email<input class="in" id="lE" type="email" autocomplete="email"></label><label class="f">Password<input class="in" id="lP" type="password" autocomplete="current-password"></label><div class="err" id="lErr"></div><button class="btn gold" id="lB">Log in</button><div class="row between small"><a href="#/signup">Create an account</a><a href="#" id="forgot">Forgot password?</a></div></form></div></div>';
 };
 V.signup = async function (arg) {
@@ -404,7 +409,7 @@ V.deal = async function (id) {
     (owner ? '<div class="row" style="margin-top:22px">' + (d.status === "open" ? '<button class="btn" data-close-deal="' + d.id + '">Close deal</button>' : '<button class="btn" data-open-deal="' + d.id + '">Reopen</button>') + "</div>" :
       mine ? '<div class="card" style="margin-top:22px"><b>You applied ' + fmtDate(mine.created_at) + '.</b> <span class="tag ' + (mine.status === "accepted" ? "gn" : mine.status === "rejected" ? "rd" : "gold") + '">' + esc(mine.status) + "</span></div>" :
       isBrand() ? "" : !eligible ? '<p class="muted" style="margin-top:22px">This deal is for ' + (d.eligible_roles || []).map(function (r) { return ROLES[r]; }).join(", ") + ".</p>" :
-      d.status !== "open" ? "" : '<form class="stack" id="applyF" style="margin-top:24px"><label class="f">Why you? (brands read this first)<textarea class="in" id="pitch" maxlength="800" placeholder="Your audience, your story, and how you would deliver"></textarea></label><button class="btn gold" id="applyB">Apply' + (isMember() ? "" : " &middot; membership required") + "</button></form>") +
+      d.status !== "open" ? "" : '<form class="stack" id="applyF" style="margin-top:24px"><label class="f">Why you? (brands read this first)<textarea class="in" id="pitch" maxlength="800" placeholder="Your audience, your story, and how you would deliver"></textarea></label><button class="btn gold" id="applyB">Apply' + (isMember() || ownerVip() ? "" : " &middot; membership required") + "</button></form>") +
     "</div></div></div>";
 };
 
@@ -417,7 +422,7 @@ V.post = async function () {
     '<label class="f">Description<textarea class="in" name="description" required maxlength="2000"></textarea></label><label class="f">Deliverables<textarea class="in" name="deliverables" maxlength="1200" placeholder="1 TikTok, 2 IG stories, tag @yourbrand"></textarea></label>' +
     '<div class="f">Who can apply</div><div class="row">' + ["athlete", "student", "creator"].map(function (r) { return '<label class="chk" style="margin-right:12px"><input type="checkbox" name="eligible_roles" value="' + r + '" checked>' + ROLES[r] + "</label>"; }).join("") + "</div>" +
     '<div class="grid g3"><label class="f">Minimum followers<input class="in" name="min_followers" type="number" min="0" value="0"></label><label class="f">State (optional)<input class="in" name="state" maxlength="2" placeholder="NJ"></label><label class="f">Apply by<input class="in" name="deadline" type="date"></label></div>' +
-    '<div class="err" id="postErr"></div><button class="btn gold" id="postB">Publish deal' + (isMember() || isAdmin() ? "" : " &middot; membership required") + "</button></form></div></div>";
+    '<div class="err" id="postErr"></div><button class="btn gold" id="postB">Publish deal' + (isMember() || ownerVip() ? "" : " &middot; membership required") + "</button></form></div></div>";
 };
 
 V.agreements = async function () {
@@ -480,8 +485,9 @@ V.guardian = async function (token) {
 V.membership = async function () {
   if (!S.me) { go("#/signup"); return ""; }
   var k = planKey(), price = PRICE[k], p = S.pay || {};
+  if (ownerVip()) return '<div class="page"><div class="wrap auth"><div class="eyebrow">Membership</div><h2 class="h" style="margin:10px 0 18px">VIP &middot; Owner</h2><div class="card"><b>Full access, always.</b> Every talent and brand feature is open and there is nothing to pay.' +
+    (isAdmin() ? "" : '<p class="muted small" style="margin-top:6px">Posting deals and applying run on your owner account. <a href="#/login">Switch to it</a> if you are signed in to another one.</p>') + '</div></div></div>';
   var head = '<div class="page"><div class="wrap auth"><div class="eyebrow">Membership</div><h2 class="h" style="margin:10px 0 8px">' + (k === "brand" ? "Brand" : "Talent") + ' membership</h2><div class="price" style="margin:14px 0 20px">$' + price + "<small> /month</small></div>";
-  if (isAdmin()) return head + '<div class="card">Owner account: full access, always.</div></div></div>';
   if (p.member && !p.pending) return head + '<div class="card"><b>Active</b>' + (p.paid_until ? " through " + fmtDate(p.paid_until) : "") + '. <a href="#/app">Go to your dashboard</a></div>' + payBox(price, true) + "</div></div>";
   if (p.pending) return head + '<div class="card"><b>Payment received — confirming now.</b><p class="muted small" style="margin-top:6px">You have full access while we confirm' + (p.paid_until ? ", through " + fmtDate(p.paid_until) : "") + ". Questions: " + CONTACT + "</p></div></div></div>";
   return head + payBox(price, false) + "</div></div>";
@@ -562,6 +568,13 @@ document.addEventListener("click", async function (e) {
     if (method === "zelle") { try { navigator.clipboard.writeText(ZELLE.replace(/\D/g, "")); } catch (x) {} var zn = $("zelleNote"); if (zn) zn.textContent = "Number copied. Send it in your bank's Zelle."; }
     if (!S.payClaimed) { S.payClaimed = true; sb.rpc("nil_pay_claim", { p_method: method, p_ref: S.me.full_name || S.me.id }).then(async function () { await loadMe(); }); }
     if (method === "cashapp") setTimeout(function () { toast("Thanks! You're active while we confirm."); go("#/app"); }, 500);
+  }
+  if (e.target.closest("#ownerB")) {
+    var ob = $("ownerB"); busy(ob, true, "Continue as owner (PIN)"); $("lErr").textContent = "";
+    var signed = await ownerSession(true);
+    busy(ob, false, "Continue as owner (PIN)");
+    if (!signed) { $("lErr").textContent = "Owner PIN sign-in is not switched on for NIL365 yet. Log in with your owner email."; return; }
+    await loadMe(); go("#/app"); return;
   }
   var t = e.target.closest("[data-role],[data-acc],[data-rej],[data-agr],[data-copy],[data-close-deal],[data-open-deal],#next,#back,#forgot,#printB,#voidB,#burger");
   if (!t) { if (!e.target.closest("#links")) $("links").classList.remove("open"); return; }
@@ -661,11 +674,11 @@ document.addEventListener("submit", async function (e) {
     var id = location.hash.split("/")[2];
     var ra = await sb.from("nil_applications").insert({ deal_id: id, applicant_id: S.me.id, pitch: $("pitch").value.trim() });
     busy($("applyB"), false, "Apply");
-    if (ra.error) return toast(/row-level/.test(ra.error.message) ? "Activate your membership to apply." : ra.error.message, true);
+    if (ra.error) return toast(/row-level/.test(ra.error.message) ? (ownerVip() && !isAdmin() ? "Owner VIP: switch to your owner account to apply." : "Activate your membership to apply.") : ra.error.message, true);
     toast("Applied. The brand will review your profile."); render(); return;
   }
   if (f.id === "postF") {
-    if (!isAdmin() && !requireMember()) return;
+    if (!requireMember()) return;
     var p = readForm(f); $("postErr").textContent = "";
     var roles = [].slice.call(f.querySelectorAll("[name=eligible_roles]:checked")).map(function (c) { return c.value; });
     if (!p.title || !p.compensation || !p.description) { $("postErr").textContent = "Title, compensation and description are required."; return; }
@@ -674,7 +687,7 @@ document.addEventListener("submit", async function (e) {
     var rp = await sb.from("nil_deals").insert({ brand_id: S.me.id, title: p.title, category: p.category, compensation: p.compensation, description: p.description, deliverables: p.deliverables || "",
       eligible_roles: roles, min_followers: +p.min_followers || 0, state: (p.state || "").toUpperCase() || null, deadline: p.deadline || null }).select("id").single();
     busy($("postB"), false, "Publish deal");
-    if (rp.error) { $("postErr").textContent = /row-level/.test(rp.error.message) ? "Activate your brand membership to post deals." : rp.error.message; return; }
+    if (rp.error) { $("postErr").textContent = /row-level/.test(rp.error.message) ? (ownerVip() && !isAdmin() ? "Owner VIP: switch to your owner account to post deals." : "Activate your brand membership to post deals.") : rp.error.message; return; }
     toast("Deal published."); go("#/deal/" + rp.data.id); return;
   }
   if (f.id === "profF") {
@@ -725,10 +738,37 @@ async function render() {
 }
 window.addEventListener("hashchange", render);
 sb.auth.onAuthStateChange(function (ev) { if (ev === "PASSWORD_RECOVERY") { location.hash = "#/reset"; } });
-loadMe().then(render);
+
+/* ---------- owner PIN -> owner account ---------- */
+// owner-session (Supabase edge function) re-checks the PIN token with the owner-pin service and hands back a
+// one-time sign-in for the owner's own account, so the database's owner rules apply. Nothing else changes.
+var ownerTried = null;
+function ownerSession(force) {
+  var t = window.HSW_OWNER_TOKEN;
+  if (!pinOwner() || !t || S.session || (!force && ownerTried === t)) return Promise.resolve(!!S.session && pinOwner());
+  ownerTried = t;
+  return fetch(SB_URL + "/functions/v1/owner-session", { method: "POST", headers: { "Content-Type": "application/json", apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "X-HSW-Owner": t }, body: "{}" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) {
+      if (!j || !j.token_hash) return false;
+      return sb.auth.verifyOtp({ token_hash: j.token_hash, type: "magiclink" }).then(function (x) { return !x.error && !!(x.data && x.data.session); });
+    })
+    .catch(function () { return false; });
+}
+var booted = false;
+function ownerChanged() {
+  if (!booted) return;
+  var auto = pinOwner() && !S.session ? ownerSession() : Promise.resolve(false);
+  auto.then(function (signed) { return signed ? loadMe() : null; }).then(render);
+}
+window.addEventListener("hsw-owner", ownerChanged);
+loadMe().then(render).then(function () {
+  booted = true;
+  if (window.HSW_OWNER_READY) window.HSW_OWNER_READY.then(function (on) { if (on) ownerChanged(); });
+});
 })();
 </script>
 <script src="https://calltwin.onrender.com/owner-signin.js" defer></script>
-<script src="owner-login.js" defer></script>
+<script src="owner-login.js?v=3" defer></script>
 </body>
 </html>

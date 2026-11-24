@@ -238,8 +238,11 @@ function parseJSON(text) {
   const end = t.lastIndexOf(close);
   return JSON.parse(t.slice(start, end + 1));
 }
-function hasKey() { const s = state.settings; return s.provider === "cloud" ? !!s.cloudKey : s.provider === "groq" ? !!s.groqKey : !!s.geminiKey; }
-const providerName = () => ({ cloud: "HSW365 AI", groq: "Groq", gemini: "Gemini" }[state.settings.provider] || "AI");
+// Owner PIN session from owner-login.js. HSW365 AI (promo-ai) re-checks the token with the owner-pin service,
+// so the owner needs no access code.
+const ownerToken = () => (window.HSW_OWNER && window.HSW_OWNER_TOKEN) || "";
+function hasKey() { const s = state.settings; return s.provider === "cloud" ? !!(s.cloudKey || ownerToken()) : s.provider === "groq" ? !!s.groqKey : !!s.geminiKey; }
+const providerName = () => ({ cloud: ownerToken() ? "HSW365 AI · VIP" : "HSW365 AI", groq: "Groq", gemini: "Gemini" }[state.settings.provider] || "AI");
 const isCloud = () => state.settings.provider === "cloud";
 const httpUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : null);
 async function ai({ prompt, web = false, temperature = 0.9, urls = [] }) {
@@ -288,11 +291,14 @@ async function cloudCall(prompt, web, temperature, urls) {
   const s = state.settings;
   let res, data;
   try {
-    res = await fetch(s.cloudUrl || CLOUD_URL, { method: "POST", headers: { "Content-Type": "application/json", "x-promo-key": s.cloudKey },
+    const headers = { "Content-Type": "application/json" };
+    if (s.cloudKey) headers["x-promo-key"] = s.cloudKey;
+    if (ownerToken()) headers["x-hsw-owner"] = ownerToken();
+    res = await fetch(s.cloudUrl || CLOUD_URL, { method: "POST", headers,
       body: JSON.stringify({ system: systemPrompt(), prompt, web, temperature, urls, json: true }) });
     data = await res.json().catch(() => ({}));
   } catch { throw new Error("Could not reach the HSW365 AI server. Check your connection."); }
-  if (res.status === 401) throw new Error("Access code rejected. Re-enter it in Settings.");
+  if (res.status === 401) throw new Error(s.cloudKey ? "Access code rejected. Re-enter it in Settings." : "HSW365 AI did not accept your owner PIN session. Enter your PIN again, or add your access code in Settings.");
   if (res.status === 429) { const e = new Error(data.error || "AI is rate limited. Give it a minute."); e.rate = true; throw e; }
   if (!res.ok) throw new Error(data.error || "AI error " + res.status);
   let json;
@@ -945,7 +951,8 @@ VIEWS.settings = () => {
     <div class="card stack">
       <div class="h3">AI provider</div>
       <label class="f">Provider<select class="in" id="sProv"><option value="cloud" ${s.provider === "cloud" ? "selected" : ""}>HSW365 AI (Gemini + Groq, built in)</option><option value="gemini" ${s.provider === "gemini" ? "selected" : ""}>Google Gemini (own key in this browser)</option><option value="groq" ${s.provider === "groq" ? "selected" : ""}>Groq (own key in this browser)</option></select></label>
-      <label class="f">HSW365 access code<input class="in" id="sCloud" type="password" value="${esc(s.cloudKey)}" placeholder="hsw-..."></label>
+      <label class="f">HSW365 access code<input class="in" id="sCloud" type="password" value="${esc(s.cloudKey)}" placeholder="${ownerToken() ? "Not needed: owner PIN is on" : "hsw-..."}"></label>
+      ${ownerToken() ? `<p class="muted" id="sVip" style="font-size:12.5px;margin-top:-4px"><span class="tag gn">VIP · Owner</span> Signed in with your owner PIN. HSW365 AI runs without an access code.</p>` : ""}
       <label class="f">Gemini API key<input class="in" id="sGem" type="password" value="${esc(s.geminiKey)}" placeholder="AIza..."></label>
       <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-size:12.5px">Get a free Gemini key ${ic("ext")}</a>
       <label class="f">Gemini model<input class="in" id="sGemM" value="${esc(s.geminiModel)}"></label>
@@ -1463,6 +1470,7 @@ shell();
 bind();
 render();
 if (ui.unlocked) toast("Unlocked. HSW365 AI is ready.");
+window.addEventListener("hsw-owner", () => { if (document.activeElement?.matches("input,textarea,select")) updateTop(); else render(); });
 if (state.settings.cloneSync) flushSync();
 window.HSW365Promo = { state: () => state, ai, parseJSON, utm, applyUtm, buildSlots };
 })();

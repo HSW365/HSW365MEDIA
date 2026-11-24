@@ -1,8 +1,10 @@
 // HSW365 Promo Engine — AI proxy (Supabase Edge Function "promo-ai", project friendy)
 // Holds the AI keys server-side so the public /promo page never ships them.
 // Gemini first (live web research); on rate limit or outage it falls back to Groq.
-// Auth: header x-promo-key must match PROMO_ACCESS_KEY (owner access code).
+// Auth: header x-promo-key must match PROMO_ACCESS_KEY (owner access code), or header x-hsw-owner
+// must carry an owner PIN session token that the owner-pin service verifies.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { isOwnerRequest } from "../_shared/owner.ts";
 
 const ACCESS = Deno.env.get("PROMO_ACCESS_KEY") || "__PROMO_ACCESS_KEY__";
 const GEMINI = () => Deno.env.get("GEMINI_API_KEY") || "";
@@ -12,7 +14,7 @@ const GROQ_MODELS = ["openai/gpt-oss-120b", "llama-3.3-70b-versatile", "openai/g
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type, x-promo-key, authorization, apikey",
+  "Access-Control-Allow-Headers": "content-type, x-promo-key, x-hsw-owner, authorization, apikey",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 const json = (body: unknown, status = 200) =>
@@ -122,7 +124,7 @@ async function groq(system: string, prompt: string, wantJson: boolean, temperatu
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  const authed = req.headers.get("x-promo-key") === ACCESS;
+  const authed = req.headers.get("x-promo-key") === ACCESS || await isOwnerRequest(req);
   if (req.method === "GET") {
     return json({ ok: true, service: "hsw365-promo-ai", authed, gemini: !!GEMINI(), groq: !GROQ().startsWith("__") && !!GROQ() });
   }
